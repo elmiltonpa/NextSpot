@@ -39,8 +39,7 @@ export default function Home() {
           });
         }
       },
-      (error) => {
-        console.error("Geolocation error:", error.code, error.message);
+      () => {
         if (!cancelled) setLocationState({ status: "error" });
       },
       { enableHighAccuracy: true, timeout: 5000 },
