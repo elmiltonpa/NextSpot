@@ -2,100 +2,75 @@
 
 import { useEffect, useRef } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { toast } from "sonner";
 import { PlaceData } from "@/types/location";
-import {
-  GooglePlaceAutocompleteObject,
-  GooglePlaceAutocompleteResult,
-  PlacesSelectEvent,
-  GMPSelectEvent,
-} from "@/types/places";
+import { GMPSelectEvent } from "@/types/places";
 
 interface PlaceAutocompleteProps {
   onPlaceSelect: (place: PlaceData) => void;
 }
 
 export function PlaceAutocomplete({ onPlaceSelect }: PlaceAutocompleteProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const autocompleteRef =
+    useRef<google.maps.places.PlaceAutocompleteElement>(null);
   const placesLib = useMapsLibrary("places");
 
   useEffect(() => {
-    if (!placesLib || !containerRef.current) {
+    if (!placesLib || !autocompleteRef.current) {
       return;
     }
 
-    const inputElement = containerRef.current.querySelector(
-      "gmp-place-autocomplete",
-    ) as HTMLElement;
-    if (!inputElement) {
-      console.error("Place autocomplete element not found");
-      return;
-    }
+    const element = autocompleteRef.current;
 
-    // Esta función maneja la lógica de extracción de datos
-    const processPlace = async (
-      placeObj: GooglePlaceAutocompleteObject,
-    ) => {
+    const handleSelect = async (event: Event) => {
+      const customEvent = event as GMPSelectEvent;
+      const place = customEvent.placePrediction;
+
+      if (!place?.toPlace) {
+        toast.error("No se pudo obtener información del lugar seleccionado");
+        return;
+      }
+
       try {
-        // 1. Si es una predicción, la convertimos a Place
-        let place: GooglePlaceAutocompleteResult = placeObj as unknown as GooglePlaceAutocompleteResult;
-        if (placeObj.toPlace) {
-          place = placeObj.toPlace();
-        }
-
-        // 2. Pedimos los datos
-        await place.fetchFields({
+        const dataPlace = place.toPlace();
+        await dataPlace.fetchFields({
           fields: ["displayName", "formattedAddress", "location"],
         });
 
-        // 3. Extraemos coordenadas
-        const lat = place.location?.lat();
-        const lng = place.location?.lng();
+        const lat = dataPlace.location?.lat();
+        const lng = dataPlace.location?.lng();
 
-        if (lat && lng) {
+        // Solo llamamos si tenemos coordenadas válidas
+        if (lat !== undefined && lng !== undefined) {
           onPlaceSelect({
+            name: dataPlace.displayName ?? "",
+            formatted_address: dataPlace.formattedAddress ?? "",
             location: { lat, lng },
-            name: place.displayName,
-            formatted_address: place.formattedAddress,
           });
-        } else {
-          console.warn("Place selected has no coordinates");
         }
-      } catch (err) {
-        console.error("Error processing place:", err);
+      } catch (error) {
+        console.log("Error fetching place details:", error);
+        toast.error("Error al obtener los detalles del lugar");
       }
     };
 
-    // LISTENER 1: El estándar documentado para Autocomplete
-    const handlePlacesSelect = (event: Event) => {
-      const customEvent = event as PlacesSelectEvent;
-      if (customEvent.detail?.place) {
-        processPlace(customEvent.detail.place);
-      }
-    };
-
-    // LISTENER 2: El que mencionaba tu snippet (por seguridad)
-    const handleGmpSelect = (event: Event) => {
-      const customEvent = event as GMPSelectEvent;
-      if (customEvent.placePrediction) {
-        processPlace(customEvent.placePrediction);
-      } else if (customEvent.detail?.place) {
-        processPlace(customEvent.detail.place);
-      }
-    };
-
-    // Agregamos ambos para no fallar
-    inputElement.addEventListener("gmp-places-select", handlePlacesSelect);
-    inputElement.addEventListener("gmp-select", handleGmpSelect);
+    element.addEventListener("gmp-select", handleSelect);
 
     return () => {
-      inputElement.removeEventListener("gmp-places-select", handlePlacesSelect);
-      inputElement.removeEventListener("gmp-select", handleGmpSelect);
+      element.removeEventListener("gmp-select", handleSelect);
     };
   }, [placesLib, onPlaceSelect]);
 
+  if (!placesLib) {
+    return (
+      <div className="w-full max-w-sm mx-auto h-10 bg-gray-200 rounded-md animate-pulse" />
+    );
+  }
+
   return (
-    <div ref={containerRef} className="w-full max-w-sm mx-auto relative z-50">
-      <gmp-place-autocomplete></gmp-place-autocomplete>
-    </div>
+    <gmp-place-autocomplete
+      ref={autocompleteRef}
+      className="w-full max-w-sm mx-auto block rounded-full border-2 border-gray-200 px-4 py-2 focus-within:border-blue-500 transition-colors shadow-sm"
+    />
   );
 }

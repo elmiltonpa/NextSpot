@@ -1,5 +1,6 @@
 // Tipos relacionados con ubicación y coordenadas
 
+// Coordenadas siempre definidas - validar antes de crear
 export interface Coordinates {
   lat: number;
   lng: number;

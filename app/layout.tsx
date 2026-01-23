@@ -5,6 +5,7 @@ import "./globals.css";
 
 // 1. IMPORTAMOS NUESTRO COMPONENTE
 import { MapProvider } from "../providers/MapProvider";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <MapProvider>{children}</MapProvider>
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

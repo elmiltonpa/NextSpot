@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Loader2 } from "lucide-react";
 import MapView from "@/components/map/map-view";
@@ -51,15 +51,14 @@ export default function Home() {
     };
   }, []);
 
-  const handleManualLocation = (place: PlaceData) => {
+  const handleManualLocation = useCallback((place: PlaceData) => {
     const { lat, lng } = place.location;
-
-    if (lat !== undefined && lng !== undefined && !isNaN(lat) && !isNaN(lng)) {
+    if (!isNaN(lat) && !isNaN(lng)) {
       setLocationState({ status: "success", coords: { lat, lng } });
     } else {
       console.log("Invalid coordinates from place:", place);
     }
-  };
+  }, []);
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -83,7 +82,7 @@ export default function Home() {
                 No pudimos detectarte automáticamente. Escribe tu ubicación para
                 empezar a explorar.
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="mb-6">
                 <PlaceAutocomplete onPlaceSelect={handleManualLocation} />
               </div>
               <p className="text-xs text-gray-500">
