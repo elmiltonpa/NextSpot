@@ -8,6 +8,7 @@ import { BottomSheet } from "@/features/discovery";
 import { FloatingHeader } from "@/components/layout/floating-header";
 import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
 import { LocationState, PlaceData } from "@/types/location";
+import { toast } from "sonner";
 
 const API_KEY = process.env.NEXT_PUBLIC_PLACES_API_KEY || "";
 
@@ -55,7 +56,7 @@ export default function Home() {
     if (!isNaN(lat) && !isNaN(lng)) {
       setLocationState({ status: "success", coords: { lat, lng } });
     } else {
-      console.log("Invalid coordinates from place:", place);
+      toast.error("No se pudo obtener las coordenadas del lugar seleccionado");
     }
   }, []);
 

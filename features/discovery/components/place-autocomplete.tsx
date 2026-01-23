@@ -48,8 +48,7 @@ export function PlaceAutocomplete({ onPlaceSelect }: PlaceAutocompleteProps) {
             location: { lat, lng },
           });
         }
-      } catch (error) {
-        console.log("Error fetching place details:", error);
+      } catch {
         toast.error("Error al obtener los detalles del lugar");
       }
     };

@@ -6,6 +6,7 @@ import { DistanceSelector } from "./distance-selector";
 import { PriceSelector } from "./price-selector";
 import { SurpriseButton } from "./surprise-button";
 import { Coordinates } from "@/types/location";
+import { toast } from "sonner";
 
 // Mapeo de categorías a tipos de Google Places
 const categoryToType: Record<string, string> = {
@@ -17,9 +18,9 @@ const categoryToType: Record<string, string> = {
 
 // Mapeo de distancias a metros
 const distanceToMeters: Record<string, number> = {
-  near: 1000,   // 1km
+  near: 1000, // 1km
   medium: 5000, // 5km
-  far: 10000,   // 10km
+  far: 10000, // 10km
 };
 
 interface BottomSheetProps {
@@ -75,11 +76,12 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
       // TODO: Mostrar el lugar en el mapa o modal
       alert(`¡Encontré algo! ${data.name} - ${data.address}`);
     } catch (err: unknown) {
-      const message = err instanceof Error 
-        ? err.message 
-        : "Error desconocido al buscar lugares";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Error desconocido al buscar lugares";
       setError(message);
-      console.error("Error:", err);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -132,11 +134,7 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
           />
 
           {/* Helper text */}
-          {error && (
-            <p className="text-xs text-center text-red-500">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-xs text-center text-red-500">{error}</p>}
           {isDisabled && !error && (
             <p className="text-xs text-center text-muted-foreground">
               Selecciona al menos una categoría y un rango de precio
