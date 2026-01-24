@@ -6,7 +6,7 @@ import "./globals.css";
 // 1. IMPORTAMOS NUESTRO COMPONENTE
 import { MapProvider } from "../providers/MapProvider";
 import { Toaster } from "sonner";
-import { LocationProvider } from "@/contexts/location-context";
+import { LocationProvider } from "@/context/location-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
