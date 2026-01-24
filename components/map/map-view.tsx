@@ -7,9 +7,9 @@ import { useLocation } from "@/context/location-context";
 const DEFAULT_CENTER = { lat: -34.603722, lng: -58.381592 };
 
 export default function MapView() {
-  const { coords, setCoords } = useLocation();
+  const { userLocation, setUserLocation } = useLocation();
 
-  const centerPosition = coords || DEFAULT_CENTER;
+  const centerPosition = userLocation || DEFAULT_CENTER;
 
   return (
     <div className="h-full w-full">
@@ -29,7 +29,7 @@ export default function MapView() {
           draggable={true}
           onDragEnd={(e) => {
             if (e.latLng) {
-              setCoords({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+              setUserLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
             }
           }}
         />
