@@ -7,20 +7,14 @@ import { PriceSelector } from "./price-selector";
 import { SurpriseButton } from "./surprise-button";
 import { Coordinates } from "@/types/location";
 import { toast } from "sonner";
-
-// Mapeo de categorías a tipos de Google Places
-const categoryToType: Record<string, string> = {
-  food: "restaurant",
-  drinks: "bar",
-  coffee: "cafe",
-  outdoor: "park",
-};
+import { GOOGLE_TYPE_MAPPING, CategoryKey } from "@/constants/categories";
+import { getRandomPlace } from "@/actions/get-random-place";
 
 // Mapeo de distancias a metros
 const distanceToMeters: Record<string, number> = {
-  near: 1000, // 1km
-  medium: 5000, // 5km
-  far: 10000, // 10km
+  near: 1000,
+  medium: 5000,
+  far: 10000,
 };
 
 interface BottomSheetProps {
@@ -28,7 +22,7 @@ interface BottomSheetProps {
 }
 
 export function BottomSheet({ userLocation }: BottomSheetProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([
+  const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>([
     "food",
   ]);
   const [selectedDistance, setSelectedDistance] = useState("near");
@@ -41,7 +35,9 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
 
   const handleSurprise = async () => {
     if (!userLocation) {
-      setError("No se pudo obtener tu ubicación");
+      const message = "No se pudo obtener tu ubicación";
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -49,37 +45,30 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
     setError(null);
 
     try {
-      // Elegir una categoría aleatoria de las seleccionadas
-      const randomCategory =
-        selectedCategories[
-          Math.floor(Math.random() * selectedCategories.length)
-        ];
-      const placeType = categoryToType[randomCategory];
+      const apiTypes = selectedCategories.flatMap(
+        (cat) => GOOGLE_TYPE_MAPPING[cat as CategoryKey],
+      );
+
+      const typesToSend = apiTypes.length > 0 ? apiTypes : ["restaurant"];
+
       const radius = distanceToMeters[selectedDistance];
 
-      // Construir query params
-      const params = new URLSearchParams({
-        lat: userLocation.lat.toString(),
-        lng: userLocation.lng.toString(),
-        radius: radius.toString(),
-        type: placeType,
-      });
+      const place = await getRandomPlace(
+        userLocation.lat,
+        userLocation.lng,
+        selectedPrices,
+        typesToSend,
+        radius,
+      );
 
-      // Llamar a la API
-      const response = await fetch(`/api/places/nearby?${params}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al buscar lugares");
+      if ("error" in place) {
+        throw new Error(place.error);
       }
 
-      // TODO: Mostrar el lugar en el mapa o modal
-      alert(`¡Encontré algo! ${data.name} - ${data.address}`);
+      // EXITO
+      console.log("Ganador:", place);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Error desconocido al buscar lugares";
+      const message = err instanceof Error ? err.message : "Error desconocido";
       setError(message);
       toast.error(message);
     } finally {
