@@ -9,61 +9,51 @@ import { FloatingHeader } from "@/components/layout/floating-header";
 import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
 import { PlaceData } from "@/types/location";
 import { toast } from "sonner";
-import { useLocation } from "@/contexts/location-context";
+import { useLocation } from "@/context/location-context";
+import { useLocationFlow } from "@/hooks/use-location-flow";
 
 const API_KEY = process.env.NEXT_PUBLIC_PLACES_API_KEY || "";
 type UIStatus = "loading" | "error" | "success";
 
 export default function Home() {
   const { setCoords, coords } = useLocation();
-
-  const [status, setStatus] = useState<UIStatus>("loading");
+  const { status, setStatus, handleLocationSelect } = useLocationFlow();
+  // const [status, setStatus] = useState<UIStatus>("loading");
 
   useEffect(() => {
-    let cancelled = false;
-
+    // Lógica del GPS (simplificada)
     if (!navigator.geolocation) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Necesario para detectar soporte de geolocation
-      if (!cancelled) setStatus("error");
+      setStatus("error");
       return;
     }
-
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        if (!cancelled) {
-          setCoords({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          setStatus("success");
-        }
+      (pos) => {
+        // Podemos reusar la lógica o llamar a setCoords directamente si queremos
+        handleLocationSelect({
+          location: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+          name: "Mi ubicación",
+          formatted_address: "",
+        });
       },
-      () => {
-        if (!cancelled) setStatus("error");
-      },
-      { enableHighAccuracy: true, timeout: 5000 },
+      () => setStatus("error"),
     );
+  }, [setStatus, handleLocationSelect]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [setCoords]);
+  // const handleManualLocation = useCallback(
+  //   (place: PlaceData) => {
+  //     const { lat, lng } = place.location;
 
-  const handleManualLocation = useCallback(
-    (place: PlaceData) => {
-      const { lat, lng } = place.location;
-
-      if (!isNaN(lat) && !isNaN(lng)) {
-        setCoords({ lat, lng });
-        setStatus("success");
-      } else {
-        toast.error(
-          "No se pudo obtener las coordenadas del lugar seleccionado",
-        );
-      }
-    },
-    [setCoords],
-  );
+  //     if (!isNaN(lat) && !isNaN(lng)) {
+  //       setCoords({ lat, lng });
+  //       setStatus("success");
+  //     } else {
+  //       toast.error(
+  //         "No se pudo obtener las coordenadas del lugar seleccionado",
+  //       );
+  //     }
+  //   },
+  //   [setCoords],
+  // );
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -88,7 +78,7 @@ export default function Home() {
                 empezar a explorar.
               </p>
               <div className="mb-6">
-                <PlaceAutocomplete onPlaceSelect={handleManualLocation} />
+                <PlaceAutocomplete onPlaceSelect={handleLocationSelect} />
               </div>
             </div>
           </div>
@@ -99,7 +89,7 @@ export default function Home() {
           <>
             <MapView />
 
-            <FloatingHeader />
+            <FloatingHeader onLocationChangeAction={handleLocationSelect} />
 
             <BottomSheet userLocation={coords} />
           </>
