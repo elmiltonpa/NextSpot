@@ -122,8 +122,6 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
             disabled={isDisabled}
           />
 
-          {/* Helper text */}
-          {error && <p className="text-xs text-center text-red-500">{error}</p>}
           {isDisabled && !error && (
             <p className="text-xs text-center text-muted-foreground">
               Selecciona al menos una categoría y un rango de precio
