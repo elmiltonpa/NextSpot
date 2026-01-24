@@ -79,7 +79,7 @@ export async function getRandomPlace(
 
     if (!data.places || data.places.length === 0) {
       return {
-        error: "No encontramos lugares con esos filtros cerca de ti. 😔",
+        error: "No encontramos lugares con esos filtros cerca de ti.",
       };
     }
 
