@@ -1,6 +1,6 @@
 // Tipos para Google Places API
 
-interface AuthorAttributions {
+export interface AuthorAttributions {
   displayName: string;
   uri: string;
   photoUrl: string;
@@ -79,4 +79,3 @@ export interface NextSpotPlace {
   photo_ref: string | null;
   maps_url: string;
 }
-
