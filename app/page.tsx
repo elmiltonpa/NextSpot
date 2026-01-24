@@ -1,34 +1,28 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Loader2 } from "lucide-react";
 import MapView from "@/components/map/map-view";
 import { BottomSheet } from "@/features/discovery";
 import { FloatingHeader } from "@/components/layout/floating-header";
 import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
-import { PlaceData } from "@/types/location";
-import { toast } from "sonner";
 import { useLocation } from "@/context/location-context";
 import { useLocationFlow } from "@/hooks/use-location-flow";
 
 const API_KEY = process.env.NEXT_PUBLIC_PLACES_API_KEY || "";
-type UIStatus = "loading" | "error" | "success";
 
 export default function Home() {
-  const { setCoords, coords } = useLocation();
+  const { userLocation } = useLocation();
   const { status, setStatus, handleLocationSelect } = useLocationFlow();
-  // const [status, setStatus] = useState<UIStatus>("loading");
 
   useEffect(() => {
-    // Lógica del GPS (simplificada)
     if (!navigator.geolocation) {
       setStatus("error");
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        // Podemos reusar la lógica o llamar a setCoords directamente si queremos
         handleLocationSelect({
           location: { lat: pos.coords.latitude, lng: pos.coords.longitude },
           name: "Mi ubicación",
@@ -38,22 +32,6 @@ export default function Home() {
       () => setStatus("error"),
     );
   }, [setStatus, handleLocationSelect]);
-
-  // const handleManualLocation = useCallback(
-  //   (place: PlaceData) => {
-  //     const { lat, lng } = place.location;
-
-  //     if (!isNaN(lat) && !isNaN(lng)) {
-  //       setCoords({ lat, lng });
-  //       setStatus("success");
-  //     } else {
-  //       toast.error(
-  //         "No se pudo obtener las coordenadas del lugar seleccionado",
-  //       );
-  //     }
-  //   },
-  //   [setCoords],
-  // );
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -91,7 +69,7 @@ export default function Home() {
 
             <FloatingHeader onLocationChangeAction={handleLocationSelect} />
 
-            <BottomSheet userLocation={coords} />
+            <BottomSheet userLocation={userLocation} />
           </>
         )}
       </main>
