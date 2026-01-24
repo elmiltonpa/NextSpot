@@ -1,33 +1,34 @@
 "use client";
 
+import { PlaceResult } from "@/types/places";
+import { Coordinates } from "@/types/location";
 import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 
-type LocationCoords = {
-  lat: number;
-  lng: number;
-};
-
 type LocationContextType = {
-  coords: LocationCoords;
-  setCoords: (coords: LocationCoords) => void;
+  // Estado A: Dónde está el usuario (Origen)
+  userLocation: Coordinates | null;
+  setUserLocation: (coords: Coordinates) => void;
+
+  // Estado B: El lugar sugerido (Destino)
+  selectedPlace: PlaceResult | null;
+  setSelectedPlace: (place: PlaceResult | null) => void;
 };
 
 const LocationContext = createContext<LocationContextType | null>(null);
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
-  // Nota: Estas coordenadas por defecto son del Obelisco en BA.
-  // Quizás quieras iniciar en null o 0,0 si prefieres esperar al GPS del usuario.
-  const [coords, setCoords] = useState<LocationCoords>({
-    lat: -34.603722,
-    lng: -58.381592,
-  });
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+
+  const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
 
   const value = useMemo(
     () => ({
-      coords,
-      setCoords,
+      userLocation,
+      setUserLocation,
+      selectedPlace,
+      setSelectedPlace,
     }),
-    [coords],
+    [userLocation, selectedPlace],
   );
 
   return (
