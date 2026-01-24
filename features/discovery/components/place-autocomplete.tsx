@@ -11,16 +11,15 @@ interface PlaceAutocompleteProps {
 }
 
 export function PlaceAutocomplete({ onPlaceSelect }: PlaceAutocompleteProps) {
-  const autocompleteRef =
-    useRef<google.maps.places.PlaceAutocompleteElement>(null);
+  const placeRef = useRef<google.maps.places.PlaceAutocompleteElement>(null);
   const placesLib = useMapsLibrary("places");
 
   useEffect(() => {
-    if (!placesLib || !autocompleteRef.current) {
+    if (!placesLib || !placeRef.current) {
       return;
     }
 
-    const element = autocompleteRef.current;
+    const element = placeRef.current;
 
     const handleSelect = async (event: Event) => {
       const customEvent = event as GMPSelectEvent;
@@ -68,7 +67,7 @@ export function PlaceAutocomplete({ onPlaceSelect }: PlaceAutocompleteProps) {
 
   return (
     <gmp-place-autocomplete
-      ref={autocompleteRef}
+      ref={placeRef}
       className="w-full max-w-sm mx-auto block rounded-full border-2 border-gray-200 px-4 py-2 focus-within:border-blue-500 transition-colors shadow-sm"
     />
   );
