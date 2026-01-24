@@ -1,25 +1,74 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { useState } from "react";
+import { MapPin, X } from "lucide-react";
+import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
+import { PlaceData } from "@/types/location";
 
-export function FloatingHeader() {
+type Props = {
+  onLocationChangeAction: (place: PlaceData) => void; // Recibimos la función maestra
+};
+
+export function FloatingHeader({ onLocationChangeAction }: Props) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // const handlePlaceSelect = (place: PlaceData) => {
+  //   setCoords(place.location);
+
+  //   setIsModalOpen(false);
+  // };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 p-4">
-      <div className="flex items-center justify-between max-w-lg mx-auto">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 px-4 py-2.5 bg-white rounded-full shadow-lg border border-gray-100 group hover:shadow-xl transition-all duration-300">
-          <div 
-            className="w-9 h-9 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-            style={{
-              background: "linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%)",
-              boxShadow: "0 4px 12px -2px rgba(234, 88, 12, 0.4)"
-            }}
+    <>
+      <header className="fixed top-4 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
+        <div className="flex items-center gap-2 rounded-full bg-white/90 p-1 pl-4 shadow-lg backdrop-blur-md transition-all hover:bg-white pointer-events-auto border border-gray-200/50">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="cursor-pointer flex items-center gap-2 pr-3 border-r border-gray-200 hover:opacity-70 transition-opacity"
           >
-            <MapPin className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-bold text-foreground tracking-tight">NextSpot</span>
+            <MapPin className="h-4 w-4 text-red-500 fill-red-500" />
+            <div className="flex flex-col items-start">
+              <span className="text-xs font-bold text-gray-800 leading-none">
+                Cambiar ubicación
+              </span>
+            </div>
+          </button>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-60 flex items-start justify-center pt-24 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 mx-4 relative animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 text-gray-400"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <h3 className="text-lg font-bold text-gray-900 mb-1">
+              ¿A dónde vamos?
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Busca una ciudad o dirección para mover el mapa.
+            </p>
+
+            <div className="w-full">
+              <PlaceAutocomplete
+                onPlaceSelect={(place) => {
+                  onLocationChangeAction(place);
+                  setIsModalOpen(false);
+                }}
+              />
+            </div>
+          </div>
+
+          <div
+            className="absolute inset-0 -z-10"
+            onClick={() => setIsModalOpen(false)}
+          />
+        </div>
+      )}
+    </>
   );
 }
