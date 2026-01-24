@@ -1,23 +1,26 @@
 "use client";
 
 import { useEffect } from "react";
-import { Map, useMap } from "@vis.gl/react-google-maps";
+import { Map, useMap, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { useLocation } from "@/contexts/location-context";
 
-interface MapViewProps {
-  center: { lat: number; lng: number } | null; // Aceptamos null por seguridad
-}
+// interface MapViewProps {
+//   center: { lat: number; lng: number } | null; // Aceptamos null por seguridad
+// }
 
 // Coordenadas por defecto (ej. Obelisco, BsAs) por si falla la geo
 const DEFAULT_CENTER = { lat: -34.603722, lng: -58.381592 };
 
-export default function MapView({ center }: MapViewProps) {
+export default function MapView() {
   // Si center viene null, usamos el default.
-  const initialCenter = center || DEFAULT_CENTER;
+  const { coords, setCoords } = useLocation();
+
+  const centerPosition = coords || DEFAULT_CENTER;
 
   return (
     <div className="h-full w-full">
       <Map
-        defaultCenter={initialCenter}
+        defaultCenter={DEFAULT_CENTER}
         defaultZoom={15}
         gestureHandling={"greedy"}
         disableDefaultUI={true}
@@ -27,7 +30,16 @@ export default function MapView({ center }: MapViewProps) {
         maxZoom={20}
       >
         {/* Solo si tenemos un centro real (del usuario), activamos el actualizador */}
-        {center && <MapUpdater center={center} />}
+        <MapUpdater center={centerPosition} />
+        <AdvancedMarker
+          position={centerPosition}
+          draggable={true}
+          onDragEnd={(e) => {
+            if (e.latLng) {
+              setCoords({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+            }
+          }}
+        />
       </Map>
     </div>
   );
@@ -40,10 +52,7 @@ function MapUpdater({ center }: { center: { lat: number; lng: number } }) {
   useEffect(() => {
     if (!map || !center) return;
 
-    // Verificamos que las coordenadas sean números válidos antes de mover
-    if (typeof center.lat === "number" && typeof center.lng === "number") {
-      map.panTo(center);
-    }
+    map.panTo(center);
   }, [center, map]);
 
   return null;
