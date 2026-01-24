@@ -1,4 +1,17 @@
-// Tipos para Google Places API
+export interface PlaceResult {
+  name: string;
+  id: string;
+  displayName: { text: string; languageCode: string };
+  formattedAddress: string;
+  priceLevel?: string;
+  rating?: number;
+  userRatingCount?: number;
+  currentOpeningHours?: { openNow: boolean };
+  primaryTypeDisplayName?: { text: string };
+  photos?: { name: string; authorAttributions: AuthorAttributions[] }[];
+  googleMapsUri: string;
+  location: { latitude: number; longitude: number };
+}
 
 export interface AuthorAttributions {
   displayName: string;
@@ -13,7 +26,6 @@ export interface GooglePlacePhoto {
   authorAttributions?: AuthorAttributions[];
 }
 
-// Respuesta de Google Places API (New)
 export interface GooglePlace {
   id: string;
   formattedAddress?: string;
@@ -34,7 +46,6 @@ export interface GooglePlace {
   photos?: GooglePlacePhoto[];
 }
 
-// Tipos para el componente PlaceAutocomplete (Google Maps JS API)
 export interface GooglePlaceAutocompleteObject {
   toPlace?: () => GooglePlaceAutocompleteResult;
   [key: string]: unknown;
@@ -64,7 +75,6 @@ export interface GMPSelectEvent extends Event {
   };
 }
 
-// Formato simplificado para nuestra app (respuesta de /api/places/nearby)
 export interface NextSpotPlace {
   id: string;
   name: string;
