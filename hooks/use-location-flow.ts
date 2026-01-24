@@ -8,7 +8,7 @@ export type LocationStatus = "loading" | "error" | "success";
 export function useLocationFlow() {
   const [status, setStatus] = useState<LocationStatus>("loading");
 
-  const { setCoords } = useLocation();
+  const { setUserLocation } = useLocation();
 
   const handleLocationSelect = useCallback(
     (place: PlaceData) => {
@@ -19,11 +19,11 @@ export function useLocationFlow() {
         return;
       }
 
-      setCoords({ lat, lng });
+      setUserLocation({ lat, lng });
 
       setStatus("success");
     },
-    [setCoords],
+    [setUserLocation],
   );
 
   return {
