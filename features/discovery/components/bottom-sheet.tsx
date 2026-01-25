@@ -9,6 +9,7 @@ import { Coordinates } from "@/types/location";
 import { toast } from "sonner";
 import { GOOGLE_TYPE_MAPPING, CategoryKey } from "@/constants/categories";
 import { getRandomPlace } from "@/actions/get-random-place";
+import { useLocation } from "@/context/location-context";
 
 // Mapeo de distancias a metros
 const distanceToMeters: Record<string, number> = {
@@ -32,6 +33,7 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { setSelectedPlace } = useLocation();
 
   const handleSurprise = async () => {
     if (!userLocation) {
@@ -64,8 +66,7 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
       if ("error" in place) {
         throw new Error(place.error);
       }
-
-      // EXITO
+      setSelectedPlace(place);
       console.log("Ganador:", place);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
