@@ -29,7 +29,7 @@ export default function MapView() {
         minZoom={3}
         maxZoom={20}
       >
-        <MapUpdater center={centerPosition} />
+        <MapUpdater />
         <AdvancedMarker
           position={centerPosition}
           draggable={true}
@@ -60,14 +60,34 @@ export default function MapView() {
   );
 }
 
-function MapUpdater({ center }: { center: { lat: number; lng: number } }) {
+export function MapUpdater() {
   const map = useMap();
+  const { userLocation, selectedPlace } = useLocation();
+
+  const VERTICAL_OFFSET = 150;
 
   useEffect(() => {
-    if (!map || !center) return;
+    if (!map) return;
 
-    map.panTo(center);
-  }, [center, map]);
+    if (selectedPlace) {
+      map.panTo({
+        lat: selectedPlace.location.latitude,
+        lng: selectedPlace.location.longitude,
+      });
+
+      map.setZoom(16);
+
+      setTimeout(() => {
+        map.panBy(0, VERTICAL_OFFSET);
+      }, 50);
+    } else if (userLocation) {
+      map.panTo(userLocation);
+      map.setZoom(15);
+      setTimeout(() => {
+        map.panBy(0, VERTICAL_OFFSET);
+      }, 50);
+    }
+  }, [map, selectedPlace, userLocation]);
 
   return null;
 }
