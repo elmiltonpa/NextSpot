@@ -1,15 +1,21 @@
 "use client";
 
 import { useEffect } from "react";
-import { Map, useMap, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { Map, useMap, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import { useLocation } from "@/context/location-context";
 
 const DEFAULT_CENTER = { lat: -34.603722, lng: -58.381592 };
 
 export default function MapView() {
-  const { userLocation, setUserLocation } = useLocation();
+  const { userLocation, setUserLocation, selectedPlace } = useLocation();
 
   const centerPosition = userLocation || DEFAULT_CENTER;
+  const selectedPosition = selectedPlace
+    ? {
+        lat: selectedPlace.location.latitude,
+        lng: selectedPlace.location.longitude,
+      }
+    : null;
 
   return (
     <div className="h-full w-full">
@@ -33,6 +39,22 @@ export default function MapView() {
             }
           }}
         />
+
+        {selectedPlace && (
+          <>
+            <AdvancedMarker
+              position={selectedPosition}
+              title={selectedPlace.name}
+            >
+              <Pin
+                background={"#3b82f6"}
+                borderColor={"#1d4ed8"}
+                glyphColor={"#ffffff"}
+                scale={1.2}
+              />
+            </AdvancedMarker>
+          </>
+        )}
       </Map>
     </div>
   );
