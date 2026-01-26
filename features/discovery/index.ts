@@ -1,5 +1,4 @@
-// Barrel export para la feature de discovery
-export { BottomSheet } from "./components/bottom-sheet";
+export { DiscoverySidebar } from "./components/discovery-sidebar";
 export { CategorySelector } from "./components/category-selector";
 export { DistanceSelector } from "./components/distance-selector";
 export { PriceSelector } from "./components/price-selector";
