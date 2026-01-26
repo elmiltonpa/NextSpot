@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Loader2 } from "lucide-react";
 import MapView from "@/components/map/map-view";
-import { BottomSheet } from "@/features/discovery";
+import { DiscoverySidebar } from "@/features/discovery";
 import { FloatingHeader } from "@/components/layout/floating-header";
 import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
 import { useLocation } from "@/context/location-context";
@@ -69,7 +69,7 @@ export default function Home() {
 
             <FloatingHeader onLocationChangeAction={handleLocationSelect} />
 
-            <BottomSheet userLocation={userLocation} />
+            <DiscoverySidebar userLocation={userLocation} />
           </>
         )}
       </main>
