@@ -5,6 +5,7 @@ import { Map, useMap, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import { useLocation } from "@/context/location-context";
 
 const DEFAULT_CENTER = { lat: -34.603722, lng: -58.381592 };
+const OFFSET_X = -150;
 
 export default function MapView() {
   const { userLocation, setUserLocation, selectedPlace } = useLocation();
@@ -64,8 +65,6 @@ export function MapUpdater() {
   const map = useMap();
   const { userLocation, selectedPlace } = useLocation();
 
-  const VERTICAL_OFFSET = 150;
-
   useEffect(() => {
     if (!map) return;
 
@@ -78,13 +77,13 @@ export function MapUpdater() {
       map.setZoom(16);
 
       setTimeout(() => {
-        map.panBy(0, VERTICAL_OFFSET);
+        map.panBy(OFFSET_X, 0);
       }, 50);
     } else if (userLocation) {
       map.panTo(userLocation);
       map.setZoom(15);
       setTimeout(() => {
-        map.panBy(0, VERTICAL_OFFSET);
+        map.panBy(OFFSET_X, 0);
       }, 50);
     }
   }, [map, selectedPlace, userLocation]);
