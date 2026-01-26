@@ -22,7 +22,7 @@ interface BottomSheetProps {
   userLocation: Coordinates | null;
 }
 
-export function BottomSheet({ userLocation }: BottomSheetProps) {
+export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
   const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>([
     "food",
   ]);
@@ -83,19 +83,20 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
     !userLocation;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-8 pointer-events-none">
-      <div className="max-w-lg mx-auto">
-        {/* Main panel */}
-        <div
-          className="bg-white rounded-3xl pointer-events-auto shadow-2xl border border-gray-100 p-5 space-y-5 relative overflow-hidden"
-          style={{
-            boxShadow:
-              "0 -10px 40px -10px rgba(0, 0, 0, 0.12), 0 -4px 20px -4px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          {/* Drag handle indicator */}
-          <div className="flex justify-center -mt-2 mb-2">
-            <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+    <div className="fixed top-0 left-0 bottom-0 z-50 pointer-events-none w-full max-w-100">
+      {/* Main panel */}
+      <div
+        className="h-full bg-white pointer-events-auto shadow-2xl border-r border-gray-100 p-6 space-y-6 flex flex-col"
+        style={{
+          boxShadow: "10px 0 40px -10px rgba(0, 0, 0, 0.12)",
+        }}
+      >
+        <div className="flex-1 space-y-8 py-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">Descubre</h1>
+            <p className="text-sm text-gray-500">
+              Encuentra el lugar perfecto para ti
+            </p>
           </div>
 
           {/* Category selector */}
@@ -104,19 +105,21 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
             onSelect={setSelectedCategories}
           />
 
-          {/* Distance and Price row */}
-          <div className="grid grid-cols-2 gap-4">
-            <DistanceSelector
-              selected={selectedDistance}
-              onSelect={setSelectedDistance}
-            />
-            <PriceSelector
-              selected={selectedPrices}
-              onSelect={setSelectedPrices}
-            />
-          </div>
+          {/* Distance selector */}
+          <DistanceSelector
+            selected={selectedDistance}
+            onSelect={setSelectedDistance}
+          />
 
-          {/* CTA Button */}
+          {/* Price selector */}
+          <PriceSelector
+            selected={selectedPrices}
+            onSelect={setSelectedPrices}
+          />
+        </div>
+
+        {/* CTA Button at the bottom */}
+        <div className="pt-4 border-t border-gray-100">
           <SurpriseButton
             isLoading={isLoading}
             onClick={handleSurprise}
@@ -124,7 +127,7 @@ export function BottomSheet({ userLocation }: BottomSheetProps) {
           />
 
           {isDisabled && !error && (
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="mt-4 text-xs text-center text-muted-foreground">
               Selecciona al menos una categoría y un rango de precio
             </p>
           )}
