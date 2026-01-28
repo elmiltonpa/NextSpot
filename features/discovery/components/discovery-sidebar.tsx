@@ -98,14 +98,16 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
           boxShadow: "10px 0 40px -10px rgba(0, 0, 0, 0.12)",
         }}
       >
-        <div className="flex-1 space-y-8 py-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Descubre</h1>
-            <p className="text-sm text-gray-500">
-              Encuentra el lugar perfecto para ti
-            </p>
-          </div>
+        {/* Fixed Header */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Descubre</h1>
+          <p className="text-sm text-gray-500">
+            Encuentra el lugar perfecto para ti
+          </p>
+        </div>
 
+        {/* Scrollable Content */}
+        <div className="flex-1 space-y-8 overflow-y-auto pr-1 -mr-1">
           {/* Category selector */}
           <CategorySelector
             selected={selectedCategories}
