@@ -66,27 +66,51 @@ export function MapUpdater() {
   const { userLocation, selectedPlace } = useLocation();
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !selectedPlace) return;
 
-    if (selectedPlace) {
-      map.panTo({
-        lat: selectedPlace.location.latitude,
-        lng: selectedPlace.location.longitude,
-      });
+    map.panTo({
+      lat: selectedPlace.location.latitude,
+      lng: selectedPlace.location.longitude,
+    });
 
-      map.setZoom(16);
+    map.setZoom(18);
 
-      setTimeout(() => {
-        map.panBy(OFFSET_X, 0);
-      }, 50);
-    } else if (userLocation) {
-      map.panTo(userLocation);
-      map.setZoom(15);
-      setTimeout(() => {
-        map.panBy(OFFSET_X, 0);
-      }, 50);
+    setTimeout(() => {
+      map.panBy(OFFSET_X, 0);
+    }, 50);
+  }, [map, selectedPlace]);
+
+  useEffect(() => {
+    if (!map || !userLocation) return;
+
+    const zoom = 17;
+    map.setZoom(zoom);
+
+    const projection = map.getProjection();
+    if (projection) {
+      const scale = Math.pow(2, zoom);
+      const userPoint = projection.fromLatLngToPoint(userLocation);
+
+      const offsetWorld = OFFSET_X / scale;
+
+      if (userPoint) {
+        const newCenterPoint = new google.maps.Point(
+          userPoint.x + offsetWorld,
+          userPoint.y,
+        );
+        const newCenter = projection.fromPointToLatLng(newCenterPoint);
+        if (newCenter) {
+          map.panTo(newCenter);
+          return;
+        }
+      }
     }
-  }, [map, selectedPlace, userLocation]);
+
+    map.panTo(userLocation);
+    setTimeout(() => {
+      map.panBy(OFFSET_X, 0);
+    }, 50);
+  }, [map, userLocation]);
 
   return null;
 }
