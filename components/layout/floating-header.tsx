@@ -12,23 +12,17 @@ type Props = {
 export function FloatingHeader({ onLocationChangeAction }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // const handlePlaceSelect = (place: PlaceData) => {
-  //   setCoords(place.location);
-
-  //   setIsModalOpen(false);
-  // };
-
   return (
     <>
       <header className="fixed top-4 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
-        <div className="flex items-center gap-2 rounded-full bg-white/90 p-1 pl-4 shadow-lg backdrop-blur-md transition-all hover:bg-white pointer-events-auto border border-gray-200/50">
+        <div className="flex items-center gap-2 rounded-full bg-white/95 p-1.5 pl-5 shadow-lg backdrop-blur-md transition-all hover:bg-white pointer-events-auto border border-gray-200/50">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="cursor-pointer flex items-center gap-2 pr-3 border-r border-gray-200 hover:opacity-70 transition-opacity"
+            className="cursor-pointer flex items-center gap-2.5 pr-4 border-r border-gray-200 hover:opacity-70 transition-opacity"
           >
             <MapPin className="h-4 w-4 text-red-500 fill-red-500" />
             <div className="flex flex-col items-start">
-              <span className="text-xs font-bold text-gray-800 leading-none">
+              <span className="text-sm font-bold text-gray-800 leading-none">
                 Cambiar ubicación
               </span>
             </div>
