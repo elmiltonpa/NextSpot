@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { GOOGLE_TYPE_MAPPING, CategoryKey } from "@/constants/categories";
 import { getRandomPlace } from "@/actions/get-random-place";
 import { useLocation } from "@/context/location-context";
+import { AvailabilitySelector } from "./availability-selector";
 
 // Mapeo de distancias a metros
 const distanceToMeters: Record<string, number> = {
@@ -31,6 +32,11 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
     "low",
     "medium",
   ]);
+
+  // currentOpeningHours.openNow : Boolean
+  const [selectedAvailability, setSelectedAvailability] = useState<
+    boolean | null
+  >(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setSelectedPlace } = useLocation();
@@ -61,6 +67,7 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
         selectedPrices,
         typesToSend,
         radius,
+        selectedAvailability,
       );
 
       if ("error" in place) {
@@ -115,6 +122,11 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
           <PriceSelector
             selected={selectedPrices}
             onSelect={setSelectedPrices}
+          />
+
+          <AvailabilitySelector
+            selected={selectedAvailability}
+            onSelect={setSelectedAvailability}
           />
         </div>
 
