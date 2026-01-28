@@ -14,13 +14,23 @@ const API_KEY = process.env.NEXT_PUBLIC_PLACES_API_KEY || "";
 
 export default function Home() {
   const { userLocation } = useLocation();
-  const { status, setStatus, handleLocationSelect } = useLocationFlow();
+  const { status, setStatus, handleLocationSelect, tryRecoverFromStorage } =
+    useLocationFlow();
 
   useEffect(() => {
+    const handleGeoError = () => {
+      // Si falla la geo, intentamos recuperar del storage antes de rendirnos
+      const recovered = tryRecoverFromStorage();
+      if (!recovered) {
+        setStatus("error");
+      }
+    };
+
     if (!navigator.geolocation) {
-      setStatus("error");
+      handleGeoError();
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         handleLocationSelect({
@@ -29,9 +39,9 @@ export default function Home() {
           formatted_address: "",
         });
       },
-      () => setStatus("error"),
+      () => handleGeoError(),
     );
-  }, [setStatus, handleLocationSelect]);
+  }, [setStatus, handleLocationSelect, tryRecoverFromStorage]);
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
