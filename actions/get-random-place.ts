@@ -22,6 +22,7 @@ export async function getRandomPlace(
   priceLevels: string[] = [],
   includedTypes: string[] = ["restaurant"],
   radius: number,
+  openNow: boolean | null = null,
 ) {
   const apiKey = process.env.MAPS_API_KEY;
 
@@ -65,12 +66,19 @@ export async function getRandomPlace(
 
     let candidates = data.places as PlaceResult[];
 
-    candidates = candidates.filter(
-      (place) => place.currentOpeningHours?.openNow,
-    );
+    if (openNow !== null) {
+      candidates = candidates.filter((place) => {
+        const isOpen = place.currentOpeningHours?.openNow;
+        return openNow ? isOpen : !isOpen;
+      });
+    }
 
     if (candidates.length === 0) {
-      candidates = data.places;
+      return {
+        error: openNow
+          ? "No hay lugares abiertos en este momento con esos filtros."
+          : "No se encontraron lugares que coincidan con los filtros.",
+      };
     }
 
     if (priceLevels.length > 0) {
