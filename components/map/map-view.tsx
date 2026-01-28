@@ -94,7 +94,7 @@ export function MapUpdater() {
   useEffect(() => {
     if (!map || !userLocation) return;
 
-    const zoom = 17;
+    const zoom = 16;
     map.setZoom(zoom);
 
     const projection = map.getProjection();
