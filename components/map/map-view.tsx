@@ -36,7 +36,18 @@ export default function MapView() {
           draggable={true}
           onDragEnd={(e) => {
             if (e.latLng) {
-              setUserLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+              const newCoords = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+              setUserLocation(newCoords);
+
+              // Persistir también al arrastrar el marcador
+              try {
+                localStorage.setItem(
+                  "nextspot_user_location",
+                  JSON.stringify(newCoords),
+                );
+              } catch (error) {
+                console.error("Failed to save dragged location:", error);
+              }
             }
           }}
         />
