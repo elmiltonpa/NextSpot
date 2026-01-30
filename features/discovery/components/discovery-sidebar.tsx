@@ -41,9 +41,10 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Nuevo estado para controlar la vista sin perder el lugar
   const [viewMode, setViewMode] = useState<"search" | "details">("search");
-
-  const { selectedPlace, setSelectedPlace } = useLocation();
+  
+  const { selectedPlace, setSelectedPlace, setIsWinnerModalOpen } = useLocation();
 
   const handleSurprise = async () => {
     if (!userLocation) {
@@ -78,7 +79,9 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
         throw new Error(place.error);
       }
       setSelectedPlace(place);
-      setViewMode("details");
+      setViewMode("details"); // Preparamos la vista de detalle en el sidebar
+      setIsWinnerModalOpen(true); // ¡Lanzamos el modal de celebración!
+      console.log("Ganador:", place);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
       setError(message);
