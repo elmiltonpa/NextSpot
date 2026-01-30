@@ -4,28 +4,42 @@ import { useState } from "react";
 import { MapPin, X } from "lucide-react";
 import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
 import { PlaceData } from "@/types/location";
+import { useLocation } from "@/context/location-context";
 
 type Props = {
-  onLocationChangeAction: (place: PlaceData) => void; // Recibimos la función maestra
+  onLocationChangeAction: (place: PlaceData) => void;
 };
 
 export function FloatingHeader({ onLocationChangeAction }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { userLocation } = useLocation();
   return (
     <>
       <header className="fixed top-4 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
-        <div className="flex items-center gap-2 rounded-full bg-white/95 p-1.5 pl-5 shadow-lg backdrop-blur-md transition-all hover:bg-white pointer-events-auto border border-gray-200/50">
+        <div className="flex items-center rounded-full bg-white/95 p-0.5 shadow-lg backdrop-blur-md transition-all hover:bg-white pointer-events-auto border border-gray-200/50">
+          <button
+            className="group flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            title="Ir a mi ubicación"
+            onClick={() =>
+              onLocationChangeAction({
+                location: userLocation || { lat: 0, lng: 0 },
+                formatted_address: "Mi ubicación",
+                name: "Mi ubicación",
+              })
+            }
+          >
+            <MapPin className="h-4 w-4 text-red-500 fill-red-500 transition-transform group-active:scale-90" />
+          </button>
+
+          <div className="h-4 w-px bg-gray-200 mx-1" />
+
           <button
             onClick={() => setIsModalOpen(true)}
-            className="cursor-pointer flex items-center gap-2.5 pr-4 border-r border-gray-200 hover:opacity-70 transition-opacity"
+            className="cursor-pointer flex items-center px-3 py-1 hover:opacity-70 transition-opacity"
           >
-            <MapPin className="h-4 w-4 text-red-500 fill-red-500" />
-            <div className="flex flex-col items-start">
-              <span className="text-sm font-bold text-gray-800 leading-none">
-                Cambiar ubicación
-              </span>
-            </div>
+            <span className="text-sm font-bold text-gray-800 leading-none">
+              Cambiar ubicación
+            </span>
           </button>
         </div>
       </header>
