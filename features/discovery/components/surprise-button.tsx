@@ -40,15 +40,12 @@ export function SurpriseButton({
           : "0 10px 25px -5px rgba(234, 88, 12, 0.4), 0 4px 10px -3px rgba(220, 38, 38, 0.3)",
       }}
     >
-      {/* Animated shimmer overlay on hover */}
       <div
         className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
           transform: "skewX(-20deg) translateX(-100%)",
         }}
       />
-
-      {/* Loading shimmer */}
       {isLoading && (
         <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
       )}

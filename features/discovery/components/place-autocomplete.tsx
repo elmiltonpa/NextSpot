@@ -39,7 +39,6 @@ export function PlaceAutocomplete({ onPlaceSelect }: PlaceAutocompleteProps) {
         const lat = dataPlace.location?.lat();
         const lng = dataPlace.location?.lng();
 
-        // Solo llamamos si tenemos coordenadas válidas
         if (lat !== undefined && lng !== undefined) {
           onPlaceSelect({
             name: dataPlace.displayName ?? "",

@@ -25,7 +25,6 @@ function formatPrice(priceLevel?: string) {
 }
 
 export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
-  // Construir URL de la foto
   const photoName = place.photos?.[0]?.name;
   const photoUrl = photoName
     ? `https://places.googleapis.com/v1/${photoName}/media?key=${API_KEY}&maxHeightPx=800&maxWidthPx=800`
@@ -36,7 +35,6 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
 
   return (
     <div className="flex flex-col h-full bg-white animate-in slide-in-from-right-4 duration-300">
-      {/* Imagen Header */}
       <div className="relative h-64 shrink-0">
         <div className="absolute top-4 left-4 z-10">
           <button
@@ -62,8 +60,6 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
             <MapPin className="h-16 w-16 text-gray-300" />
           </div>
         )}
-
-        {/* Gradiente para texto sobre imagen */}
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
 
         <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -76,9 +72,7 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
         </div>
       </div>
 
-      {/* Contenido Scrollable */}
       <div className="flex-1 overflow-y-auto p-5 space-y-6">
-        {/* Stats Row */}
         <div className="flex items-center justify-between text-sm border-b border-gray-100 pb-4">
           {place.rating && (
             <div className="flex flex-col items-center px-4 border-r border-gray-100 last:border-0 flex-1">
@@ -113,7 +107,6 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
           </div>
         </div>
 
-        {/* Info Blocks */}
         <div className="space-y-4">
           <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
             <MapPin className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
@@ -126,7 +119,6 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
         </div>
       </div>
 
-      {/* Footer Fijo */}
       <div className="p-4 border-t border-gray-100 bg-white">
         <a
           href={place.googleMapsUri}

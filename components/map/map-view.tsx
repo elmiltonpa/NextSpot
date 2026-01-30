@@ -39,7 +39,6 @@ export default function MapView() {
               const newCoords = { lat: e.latLng.lat(), lng: e.latLng.lng() };
               setUserLocation(newCoords);
 
-              // Persistir también al arrastrar el marcador
               try {
                 localStorage.setItem(
                   "nextspot_user_location",
