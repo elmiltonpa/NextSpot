@@ -10,6 +10,7 @@ import { PlaceAutocomplete } from "@/features/discovery/components/place-autocom
 import { useLocation } from "@/context/location-context";
 import { useLocationFlow } from "@/hooks/use-location-flow";
 import { WinnerModal } from "@/features/discovery/components/winner-modal";
+import { ProfileButton } from "@/components/layout/profile-button";
 
 const API_KEY = process.env.NEXT_PUBLIC_PLACES_API_KEY || "";
 
@@ -75,6 +76,7 @@ export default function Home() {
             <MapView />
 
             <FloatingHeader onLocationChangeAction={handleLocationSelect} />
+            <ProfileButton />
 
             <DiscoverySidebar userLocation={userLocation} />
 
