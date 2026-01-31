@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-orange-50 via-white to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Logo o Brand (Opcional) */}
       <div className="mb-8">
         <h1 className="text-4xl font-extrabold text-orange-600 tracking-tight">
           NextSpot
