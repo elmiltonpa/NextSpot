@@ -34,17 +34,16 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
     "medium",
   ]);
 
-  // currentOpeningHours.openNow : Boolean
   const [selectedAvailability, setSelectedAvailability] = useState<
     boolean | null
   >(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Nuevo estado para controlar la vista sin perder el lugar
   const [viewMode, setViewMode] = useState<"search" | "details">("search");
-  
-  const { selectedPlace, setSelectedPlace, setIsWinnerModalOpen } = useLocation();
+
+  const { selectedPlace, setSelectedPlace, setIsWinnerModalOpen } =
+    useLocation();
 
   const handleSurprise = async () => {
     if (!userLocation) {
@@ -79,9 +78,9 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
         throw new Error(place.error);
       }
       setSelectedPlace(place);
-      setViewMode("details"); // Preparamos la vista de detalle en el sidebar
-      setIsWinnerModalOpen(true); // ¡Lanzamos el modal de celebración!
-      console.log("Ganador:", place);
+      setViewMode("details");
+      setIsWinnerModalOpen(true);
+      // console.log("Ganador:", place);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
       setError(message);
@@ -98,7 +97,6 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
 
   return (
     <div className="fixed top-0 left-0 bottom-0 z-50 pointer-events-none w-full max-w-100">
-      {/* Main panel */}
       <div
         className="h-full bg-white pointer-events-auto shadow-2xl border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out"
         style={{
@@ -120,7 +118,6 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
                 Encuentra el lugar perfecto para ti
               </p>
 
-              {/* Botón para volver al último resultado si existe */}
               {selectedPlace && (
                 <button
                   onClick={() => setViewMode("details")}
@@ -141,21 +138,17 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
               )}
             </div>
 
-            {/* Scrollable Content */}
             <div className="flex-1 space-y-8 overflow-y-auto p-6">
-              {/* Category selector */}
               <CategorySelector
                 selected={selectedCategories}
                 onSelect={setSelectedCategories}
               />
 
-              {/* Distance selector */}
               <DistanceSelector
                 selected={selectedDistance}
                 onSelect={setSelectedDistance}
               />
 
-              {/* Price selector */}
               <PriceSelector
                 selected={selectedPrices}
                 onSelect={setSelectedPrices}
@@ -167,7 +160,6 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
               />
             </div>
 
-            {/* CTA Button at the bottom */}
             <div className="p-6 pt-4 border-t border-gray-100">
               <SurpriseButton
                 isLoading={isLoading}

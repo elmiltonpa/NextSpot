@@ -16,14 +16,14 @@ const PLACE_FIELDS = [
   "places.location",
 ];
 
-export async function getRandomPlace(
+export const getRandomPlace = async (
   lat: number,
   lng: number,
   priceLevels: string[] = [],
   includedTypes: string[] = ["restaurant"],
   radius: number,
   openNow: boolean | null = null,
-) {
+) => {
   const apiKey = process.env.MAPS_API_KEY;
 
   if (!apiKey) {
@@ -98,4 +98,4 @@ export async function getRandomPlace(
     console.error("Server Action Error:", error);
     return { error: "Ocurrió un error inesperado al buscar tu lugar." };
   }
-}
+};
