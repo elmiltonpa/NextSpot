@@ -42,7 +42,6 @@ export function RegisterForm() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
       setError(message);
-      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -129,9 +128,9 @@ export function RegisterForm() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                minLength={8}
+                minLength={6}
                 className="block w-full rounded-xl border-0 py-3 pl-10 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 transition-all bg-gray-50/50 focus:bg-white"
-                placeholder="Contraseña (mín. 8 caracteres)"
+                placeholder="Contraseña (mín. 6 caracteres)"
               />
               <button
                 type="button"
@@ -146,16 +145,14 @@ export function RegisterForm() {
               </button>
             </div>
           </div>
+          {error && (
+            <div className="bg-red-50 border border-red-500 p-3 rounded-md">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
         </div>
 
         <div>
-          <div>
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            )}
-          </div>
           <button
             type="submit"
             disabled={isLoading}

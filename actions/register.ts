@@ -11,7 +11,10 @@ export const register = async (formData: Form): Promise<RegisterResponse> => {
 
   try {
     if (!username || !email || !password) {
-      throw new Error("Todos los campos son obligatorios");
+      return {
+        success: false,
+        error: "Todos los campos son obligatorios",
+      };
     }
 
     if (password.length < 6) {
