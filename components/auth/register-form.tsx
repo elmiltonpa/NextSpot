@@ -11,20 +11,51 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import { Form } from "../../types/form";
+import { register } from "@/actions/register";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [dataUser, setDataUser] = useState<Form>({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await register(dataUser);
+      console.log(response);
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      setError(null);
+      toast.info("Usuario registrado");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      setError(message);
+      toast.error(message);
+    } finally {
       setIsLoading(false);
-      console.log("Formulario enviado");
-    }, 2000);
+    }
   }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setDataUser({
+      ...dataUser,
+      [name]: value,
+    });
+  };
 
   return (
     <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
@@ -40,21 +71,22 @@ export function RegisterForm() {
       <form className="mt-8 space-y-6" onSubmit={onSubmit}>
         <div className="space-y-4">
           <div>
-            <label htmlFor="name" className="sr-only">
-              Nombre completo
+            <label htmlFor="username" className="sr-only">
+              Nombre de usuario
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <User className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                id="name"
-                name="name"
+                value={dataUser.username}
+                onChange={handleChange}
+                id="username"
+                name="username"
                 type="text"
-                autoComplete="name"
                 required
                 className="block w-full rounded-xl border-0 py-3 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 transition-all bg-gray-50/50 focus:bg-white"
-                placeholder="Nombre completo"
+                placeholder="Nombre de usuario"
               />
             </div>
           </div>
@@ -68,6 +100,8 @@ export function RegisterForm() {
                 <Mail className="h-5 w-5 text-gray-400" />
               </div>
               <input
+                value={dataUser.email}
+                onChange={handleChange}
                 id="email"
                 name="email"
                 type="email"
@@ -88,6 +122,8 @@ export function RegisterForm() {
                 <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
+                value={dataUser.password}
+                onChange={handleChange}
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
@@ -113,6 +149,13 @@ export function RegisterForm() {
         </div>
 
         <div>
+          <div>
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            )}
+          </div>
           <button
             type="submit"
             disabled={isLoading}
