@@ -52,7 +52,6 @@ export default async function ProfilePage({ params }: Props) {
                 <User className="h-14 w-14 text-orange-600" />
               )}
             </div>
-            {/* Solo mostramos el indicador de "online" si es el dueño (opcional) */}
             {isOwner && (
               <div
                 className="absolute bottom-1 right-1 h-6 w-6 bg-green-500 border-4 border-white rounded-full shadow-sm"
@@ -72,8 +71,6 @@ export default async function ProfilePage({ params }: Props) {
         </div>
 
         <div className="space-y-3 mt-8">
-          {/* Se eliminó la sección de Email por privacidad */}
-
           <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50/50 border border-gray-100 hover:bg-gray-50 transition-colors">
             <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100">
               <Calendar className="h-5 w-5 text-orange-500" />
@@ -92,7 +89,6 @@ export default async function ProfilePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Botón de Cerrar Sesión solo para el dueño */}
         {isOwner && (
           <div className="pt-6 border-t border-gray-100">
             <form
