@@ -1,6 +1,8 @@
 "use server";
 
 import { PlaceResult } from "@/types/places";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const PLACE_FIELDS = [
   "places.id",
@@ -33,6 +35,8 @@ export const getRandomPlace = async (
   const url = "https://places.googleapis.com/v1/places:searchNearby";
 
   try {
+    const session = await auth();
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -93,9 +97,23 @@ export const getRandomPlace = async (
 
     const winner = candidates[Math.floor(Math.random() * candidates.length)];
 
+    try {
+      if (session) {
+        const userId = session.user.id;
+        await prisma.searchHistory.create({
+          data: {
+            userId: userId,
+            googlePlaceId: winner.id,
+            name: winner.displayName.text,
+            address: winner.formattedAddress,
+            image: winner.photos?.[0].name || null,
+          },
+        });
+      }
+    } catch {}
+
     return winner;
-  } catch (error) {
-    console.error("Server Action Error:", error);
+  } catch {
     return { error: "Ocurrió un error inesperado al buscar tu lugar." };
   }
 };
