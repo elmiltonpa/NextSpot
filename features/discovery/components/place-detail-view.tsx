@@ -1,6 +1,11 @@
-import { ArrowLeft, MapPin, Star, Navigation } from "lucide-react";
+import { ArrowLeft, MapPin, Star, Navigation, Heart } from "lucide-react";
 import { PlaceResult } from "@/types/places";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { checkFavorite, toggleFavorite } from "@/actions/favorites";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 
 interface PlaceDetailViewProps {
   place: PlaceResult;
@@ -25,6 +30,10 @@ function formatPrice(priceLevel?: string) {
 }
 
 export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
+  const { status } = useSession();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoadingFavorite, setIsLoadingFavorite] = useState(true);
+
   const photoName = place.photos?.[0]?.name;
   const photoUrl = photoName
     ? `https://places.googleapis.com/v1/${photoName}/media?key=${API_KEY}&maxHeightPx=800&maxWidthPx=800`
@@ -33,16 +42,83 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
   const isOpen = place.currentOpeningHours?.openNow;
   const priceInfo = formatPrice(place.priceLevel);
 
+  useEffect(() => {
+    const initFavorite = async () => {
+      if (!place.id || status !== "authenticated") {
+        setIsLoadingFavorite(false);
+        return;
+      }
+      try {
+        const statusFav = await checkFavorite(place.id);
+        setIsFavorite(statusFav);
+      } catch {
+      } finally {
+        setIsLoadingFavorite(false);
+      }
+    };
+    initFavorite();
+  }, [place.id, status]);
+
+  const handleToggleFavorite = async () => {
+    if (status !== "authenticated") {
+      toast.info("¡Inicia sesión para guardar tus lugares favoritos!");
+      return;
+    }
+
+    if (!place.id) return;
+
+    const previousState = isFavorite;
+    setIsFavorite(!isFavorite);
+
+    try {
+      const result = await toggleFavorite({
+        googlePlaceId: place.id,
+        name: place.displayName.text,
+        address: place.formattedAddress,
+        image: place.photos?.[0]?.name,
+        rating: place.rating,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setIsFavorite(result.isFavorite!);
+      toast.success(
+        result.isFavorite ? "Añadido a favoritos" : "Eliminado de favoritos",
+      );
+    } catch {
+      setIsFavorite(previousState);
+      toast.error("Error al actualizar favoritos");
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white animate-in slide-in-from-right-4 duration-300">
       <div className="relative h-64 shrink-0">
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-4 left-4 z-10 flex items-center gap-2 w-[calc(100%-2rem)] justify-between">
           <button
             onClick={onBack}
             className="p-2.5 rounded-full bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-all active:scale-95 group"
             title="Volver a filtros"
           >
             <ArrowLeft className="h-5 w-5 text-gray-700 group-hover:-translate-x-0.5 transition-transform" />
+          </button>
+
+          <button
+            onClick={handleToggleFavorite}
+            disabled={isLoadingFavorite}
+            className="p-2.5 rounded-full bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-all active:scale-95 group"
+            title={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+          >
+            <Heart
+              className={cn(
+                "h-5 w-5 transition-colors",
+                isFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-700 group-hover:text-red-500",
+              )}
+            />
           </button>
         </div>
 

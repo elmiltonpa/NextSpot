@@ -12,7 +12,11 @@ import { getRandomPlace } from "@/actions/get-random-place";
 import { useLocation } from "@/context/location-context";
 import { AvailabilitySelector } from "./availability-selector";
 import { PlaceDetailView } from "./place-detail-view";
-import { ArrowRight } from "lucide-react";
+import { HistoryView } from "./history-view";
+import { FavoritesView } from "./favorites-view";
+import { ArrowRight, History, Heart } from "lucide-react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useSession } from "next-auth/react";
 
 const distanceToMeters: Record<string, number> = {
   near: 1000,
@@ -20,30 +24,52 @@ const distanceToMeters: Record<string, number> = {
   far: 10000,
 };
 
+interface FilterState {
+  categories: CategoryKey[];
+  distance: string;
+  prices: string[];
+  availability: boolean | null;
+}
+
+const DEFAULT_FILTERS: FilterState = {
+  categories: ["food"],
+  distance: "near",
+  prices: ["low", "medium"],
+  availability: true,
+};
+
 interface BottomSheetProps {
   userLocation: Coordinates | null;
 }
 
 export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
-  const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>([
-    "food",
-  ]);
-  const [selectedDistance, setSelectedDistance] = useState("near");
-  const [selectedPrices, setSelectedPrices] = useState<string[]>([
-    "low",
-    "medium",
-  ]);
+  const { status } = useSession();
 
-  const [selectedAvailability, setSelectedAvailability] = useState<
-    boolean | null
-  >(true);
+  const [filters, setFilters] = useLocalStorage<FilterState>(
+    "discovery_filters",
+    DEFAULT_FILTERS,
+  );
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [viewMode, setViewMode] = useState<"search" | "details">("search");
+  const [viewMode, setViewMode] = useState<
+    "search" | "details" | "history" | "favorites"
+  >("search");
 
   const { selectedPlace, setSelectedPlace, setIsWinnerModalOpen } =
     useLocation();
+
+  const setCategories = (categories: CategoryKey[]) =>
+    setFilters((prev) => ({ ...prev, categories }));
+
+  const setDistance = (distance: string) =>
+    setFilters((prev) => ({ ...prev, distance }));
+
+  const setPrices = (prices: string[]) =>
+    setFilters((prev) => ({ ...prev, prices }));
+
+  const setAvailability = (availability: boolean | null) =>
+    setFilters((prev) => ({ ...prev, availability }));
 
   const handleSurprise = async () => {
     if (!userLocation) {
@@ -57,21 +83,21 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
     setError(null);
 
     try {
-      const apiTypes = selectedCategories.flatMap(
+      const apiTypes = filters.categories.flatMap(
         (cat) => GOOGLE_TYPE_MAPPING[cat as CategoryKey],
       );
 
       const typesToSend = apiTypes.length > 0 ? apiTypes : ["restaurant"];
 
-      const radius = distanceToMeters[selectedDistance];
+      const radius = distanceToMeters[filters.distance];
 
       const place = await getRandomPlace(
         userLocation.lat,
         userLocation.lng,
-        selectedPrices,
+        filters.prices,
         typesToSend,
         radius,
-        selectedAvailability,
+        filters.availability,
       );
 
       if ("error" in place) {
@@ -80,7 +106,6 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
       setSelectedPlace(place);
       setViewMode("details");
       setIsWinnerModalOpen(true);
-      // console.log("Ganador:", place);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
       setError(message);
@@ -91,8 +116,8 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
   };
 
   const isDisabled =
-    selectedCategories.length === 0 ||
-    selectedPrices.length === 0 ||
+    filters.categories.length === 0 ||
+    filters.prices.length === 0 ||
     !userLocation;
 
   return (
@@ -108,12 +133,46 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
             place={selectedPlace}
             onBack={() => setViewMode("search")}
           />
+        ) : viewMode === "history" ? (
+          <HistoryView
+            onBack={() => setViewMode("search")}
+            onSelect={(place) => {
+              setSelectedPlace(place);
+              setViewMode("details");
+            }}
+          />
+        ) : viewMode === "favorites" ? (
+          <FavoritesView
+            onBack={() => setViewMode("search")}
+            onSelect={(place) => {
+              setSelectedPlace(place);
+              setViewMode("details");
+            }}
+          />
         ) : (
           <>
             <div className="p-6 pb-0">
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                Descubre
-              </h1>
+              <div className="flex items-center justify-between mb-1">
+                <h1 className="text-2xl font-bold text-gray-900">Descubre</h1>
+                {status === "authenticated" && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setViewMode("history")}
+                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-orange-500 transition-colors"
+                      title="Ver Historial"
+                    >
+                      <History className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode("favorites")}
+                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-red-500 transition-colors"
+                      title="Ver Favoritos"
+                    >
+                      <Heart className="h-5 w-5" />
+                    </button>
+                  </div>
+                )}
+              </div>
               <p className="text-sm text-gray-500">
                 Encuentra el lugar perfecto para ti
               </p>
@@ -121,7 +180,7 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
               {selectedPlace && (
                 <button
                   onClick={() => setViewMode("details")}
-                  className="mt-4 w-full flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-100 transition-colors group"
+                  className="mt-4 w-full flex items-center justify-between p-3 mb-1 rounded-xl bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-100 transition-colors group"
                 >
                   <div className="flex flex-col items-start">
                     <span className="text-xs font-medium text-blue-500 uppercase tracking-wider">
@@ -140,23 +199,20 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
 
             <div className="flex-1 space-y-8 overflow-y-auto p-6">
               <CategorySelector
-                selected={selectedCategories}
-                onSelect={setSelectedCategories}
+                selected={filters.categories}
+                onSelect={setCategories}
               />
 
               <DistanceSelector
-                selected={selectedDistance}
-                onSelect={setSelectedDistance}
+                selected={filters.distance}
+                onSelect={setDistance}
               />
 
-              <PriceSelector
-                selected={selectedPrices}
-                onSelect={setSelectedPrices}
-              />
+              <PriceSelector selected={filters.prices} onSelect={setPrices} />
 
               <AvailabilitySelector
-                selected={selectedAvailability}
-                onSelect={setSelectedAvailability}
+                selected={filters.availability}
+                onSelect={setAvailability}
               />
             </div>
 
