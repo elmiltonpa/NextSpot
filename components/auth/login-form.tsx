@@ -13,11 +13,14 @@ import {
 import Link from "next/link";
 import { login } from "@/actions/login";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -27,7 +30,7 @@ export function LoginForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    setError(null); // Limpiar errores previos
+    setError(null);
 
     try {
       const response = await login(formData);
@@ -36,9 +39,11 @@ export function LoginForm() {
         setError(response.error);
       } else {
         toast.success("¡Bienvenido de nuevo!");
-        // Redirigir manualmente si todo salió bien
-        // router.push("/dashboard"); // O la ruta que prefieras
-        // router.refresh();
+
+        setTimeout(() => {
+          router.push("/");
+          router.refresh();
+        }, 1500);
       }
     } catch {
       setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
@@ -123,7 +128,6 @@ export function LoginForm() {
           </div>
         </div>
 
-        {/* Mensaje de Error Visual */}
         {error && (
           <div className="flex items-center gap-2 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200 animate-in fade-in slide-in-from-top-1">
             <AlertCircle className="h-4 w-4 shrink-0" />

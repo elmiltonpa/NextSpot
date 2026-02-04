@@ -9,7 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: "jwt",
-    maxAge: 60, // 30 días
+    maxAge: 7 * 24 * 60 * 60,
   },
   providers: [
     Credentials({
@@ -29,19 +29,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { username },
         });
 
-        // 1. Usuario no existe -> return null (sin error en consola)
         if (!user) {
           return null;
         }
 
-        // 2. Cuenta social -> Mantener error informativo
         if (!user.password) {
           throw new Error(
             "Cuenta registrada con proveedor social (Google/GitHub).",
           );
         }
 
-        // 3. Contraseña incorrecta -> return null (sin error en consola)
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
@@ -60,7 +57,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
-      // Ahora TypeScript sabe que token.username existe
       if (token.username && session.user) {
         session.user.username = token.username;
       }
@@ -68,7 +64,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async jwt({ token, user }) {
       if (user) {
-        // Ahora TypeScript sabe que user.username existe gracias a next-auth.d.ts
         token.username = user.username;
       }
       return token;

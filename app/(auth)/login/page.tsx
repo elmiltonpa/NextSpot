@@ -1,7 +1,5 @@
 import { LoginForm } from "@/components/auth/login-form";
-import { auth } from "@/lib/auth";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Iniciar Sesión - NextSpot",

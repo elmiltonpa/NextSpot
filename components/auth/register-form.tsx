@@ -14,31 +14,49 @@ import Link from "next/link";
 import { Form } from "../../types/form";
 import { register } from "@/actions/register";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [dataUser, setDataUser] = useState<Form>({
     username: "",
     email: "",
     password: "",
   });
 
+  const router = useRouter();
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await register(dataUser);
-      console.log(response);
-      if (!response.success) {
-        throw new Error(response.error);
+      const registerRresponse = await register(dataUser);
+      if (!registerRresponse.success) {
+        throw new Error(registerRresponse.error);
+      }
+
+      toast.info("Usuario registrado");
+
+      const { username, password } = dataUser;
+
+      const loginResponse = await signIn("credentials", {
+        username,
+        password,
+        redirect: false,
+      });
+
+      if (!loginResponse.ok) {
+        router.push("/login");
+      } else {
+        router.push("/");
+        router.refresh();
       }
 
       setError(null);
-      toast.info("Usuario registrado");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error desconocido";
       setError(message);
