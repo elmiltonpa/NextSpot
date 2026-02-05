@@ -11,9 +11,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { login } from "@/actions/login";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,17 +33,18 @@ export function LoginForm() {
     setError(null);
 
     try {
-      const response = await login(formData);
+      const response = await signIn("credentials", {
+        username: formData.username,
+        password: formData.password,
+        redirect: false,
+      });
 
-      if (!response.success) {
-        setError(response.error);
+      if (response?.error) {
+        setError("Credenciales invalidas");
       } else {
         toast.success("¡Bienvenido de nuevo!");
-
-        setTimeout(() => {
-          router.push("/");
-          router.refresh();
-        }, 1500);
+        router.push("/");
+        router.refresh();
       }
     } catch {
       setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
