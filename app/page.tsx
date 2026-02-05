@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 import MapView from "@/components/map/map-view";
 import { DiscoverySidebar } from "@/features/discovery";
 import { FloatingHeader } from "@/components/layout/floating-header";
@@ -55,18 +55,41 @@ export default function Home() {
         )}
 
         {status === "error" && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm p-6 text-center">
-            <div className="w-full max-w-md">
-              <h2 className="mb-2 text-3xl font-bold text-gray-900">
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-xl p-6 text-center">
+            <div className="w-full max-w-md animate-in fade-in zoom-in duration-500">
+              <div className="-mt-20 mb-16 text-center select-none">
+                <h1 className="text-6xl font-black text-orange-500 tracking-tighter drop-shadow-2xl">
+                  NextSpot
+                </h1>
+                <p className="text-[10px] font-bold text-orange-500/40 uppercase tracking-[0.4em] mt-2 ml-1">
+                  Discovery Engine
+                </p>
+              </div>
+
+              <h2 className="mb-3 text-3xl font-black text-white tracking-tight">
                 ¿Dónde estás?
               </h2>
-              <p className="mb-8 text-gray-600 text-base">
-                No pudimos detectarte automáticamente. Escribe tu ubicación para
-                empezar a explorar.
+              <p className="mb-10 text-slate-400 text-base leading-relaxed px-8">
+                Para mostrarte los mejores lugares cerca tuyo, necesitamos saber tu ubicación.
               </p>
-              <div className="mb-6">
+
+              <div className="mb-8 transition-transform">
                 <PlaceAutocomplete onPlaceSelect={handleLocationSelect} />
               </div>
+
+              <button
+                onClick={() =>
+                  handleLocationSelect({
+                    location: { lat: -34.603722, lng: -58.381592 },
+                    name: "Obelisco, Buenos Aires",
+                    formatted_address: "Av. 9 de Julio s/n, C1043 Buenos Aires",
+                  })
+                }
+                className="group inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-500 transition-all cursor-pointer uppercase tracking-widest"
+              >
+                <span>Prefiero no compartir mi ubicación</span>
+                <div className="h-px w-0 bg-orange-500 transition-all group-hover:w-4" />
+              </button>
             </div>
           </div>
         )}
