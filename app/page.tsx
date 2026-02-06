@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import MapView from "@/components/map/map-view";
 import { DiscoverySidebar } from "@/features/discovery";
 import { FloatingHeader } from "@/components/layout/floating-header";
@@ -70,7 +70,8 @@ export default function Home() {
                 ¿Dónde estás?
               </h2>
               <p className="mb-10 text-slate-400 text-base leading-relaxed px-8">
-                Para mostrarte los mejores lugares cerca tuyo, necesitamos saber tu ubicación.
+                Para mostrarte los mejores lugares cerca tuyo, necesitamos saber
+                tu ubicación.
               </p>
 
               <div className="mb-8 transition-transform">

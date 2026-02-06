@@ -14,9 +14,10 @@ import { AvailabilitySelector } from "./availability-selector";
 import { PlaceDetailView } from "./place-detail-view";
 import { HistoryView } from "./history-view";
 import { FavoritesView } from "./favorites-view";
-import { ArrowRight, History, Heart } from "lucide-react";
+import { ArrowRight, History, Heart, ChevronRight } from "lucide-react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSession } from "next-auth/react";
+import { cn } from "@/lib/utils";
 
 const distanceToMeters: Record<string, number> = {
   near: 1000,
@@ -44,6 +45,7 @@ interface BottomSheetProps {
 
 export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
   const { status } = useSession();
+  const [isOpen, setIsOpen] = useState(true);
 
   const [filters, setFilters] = useLocalStorage<FilterState>(
     "discovery_filters",
@@ -121,13 +123,34 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
     !userLocation;
 
   return (
-    <div className="fixed top-0 left-0 bottom-0 z-50 pointer-events-none w-full max-w-100">
+    <div
+      className={cn(
+        "fixed top-0 left-0 bottom-0 z-50 pointer-events-none w-full max-w-100 transition-transform duration-500 ease-in-out",
+        !isOpen && "-translate-x-full",
+      )}
+    >
       <div
-        className="h-full bg-white pointer-events-auto shadow-2xl border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out"
+        className="h-full bg-white pointer-events-auto shadow-2xl border-r border-gray-100 flex flex-col relative"
         style={{
           boxShadow: "10px 0 40px -10px rgba(0, 0, 0, 0.12)",
         }}
       >
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            "absolute -right-10 top-1/2 -translate-y-1/2 bg-orange-500 shadow-lg shadow-orange-200 rounded-r-xl p-2 cursor-pointer transition-all hover:bg-orange-600 group",
+            !isOpen && "rounded-xl -right-12",
+          )}
+          title={isOpen ? "Ocultar panel" : "Mostrar panel"}
+        >
+          <ChevronRight
+            className={cn(
+              "h-6 w-6 text-white transition-transform duration-500",
+              isOpen && "rotate-180",
+            )}
+          />
+        </button>
+
         {viewMode === "details" && selectedPlace ? (
           <PlaceDetailView
             place={selectedPlace}

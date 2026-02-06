@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Map, useMap, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import { useLocation } from "@/context/location-context";
+import { toast } from "sonner";
 
 const DEFAULT_CENTER = { lat: -34.603722, lng: -58.381592 };
 const OFFSET_X = -150;
@@ -25,10 +26,29 @@ export default function MapView() {
         defaultZoom={15}
         gestureHandling={"greedy"}
         disableDefaultUI={true}
+        disableDoubleClickZoom={true}
         mapId="DEMO_MAP_ID"
         className="h-full w-full"
         minZoom={3}
         maxZoom={20}
+        onDblclick={(e) => {
+          if (e.detail.latLng) {
+            const newCoords = {
+              lat: e.detail.latLng.lat,
+              lng: e.detail.latLng.lng,
+            };
+            setUserLocation(newCoords);
+
+            try {
+              localStorage.setItem(
+                "nextspot_user_location",
+                JSON.stringify(newCoords),
+              );
+            } catch {
+              toast.error("No se pudo guardar la ubicación en este navegador");
+            }
+          }
+        }}
       >
         <MapUpdater />
         <AdvancedMarker
@@ -44,8 +64,10 @@ export default function MapView() {
                   "nextspot_user_location",
                   JSON.stringify(newCoords),
                 );
-              } catch (error) {
-                console.error("Failed to save dragged location:", error);
+              } catch {
+                toast.error(
+                  "No se pudo guardar la ubicación en este navegador",
+                );
               }
             }
           }}
