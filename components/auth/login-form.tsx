@@ -167,6 +167,7 @@ export function LoginForm() {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
+            onClick={() => signIn("google", { callbackUrl: "/" })}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
