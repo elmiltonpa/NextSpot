@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { User, LogOut, ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { DeleteAccountButton } from "@/components/auth/delete-account-button";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -105,6 +106,7 @@ export default async function ProfilePage({ params }: Props) {
                 Cerrar Sesión
               </button>
             </form>
+            <DeleteAccountButton />
           </div>
         )}
       </div>
