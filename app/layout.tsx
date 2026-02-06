@@ -27,7 +27,7 @@ export default async function RootLayout({
         <AuthProvider session={session}>
           <LocationProvider>
             <MapProvider>{children}</MapProvider>
-            <Toaster position="top-center" richColors />
+            <Toaster position="top-center" richColors closeButton />
           </LocationProvider>
         </AuthProvider>
       </body>
