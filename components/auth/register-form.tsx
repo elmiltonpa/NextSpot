@@ -11,7 +11,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
-import { Form } from "../../types/form";
 import { register } from "@/actions/register";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
@@ -20,27 +19,76 @@ import { useRouter } from "next/navigation";
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dataUser, setDataUser] = useState<Form>({
+  const [fieldErrors, setFieldErrors] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+  const [dataUser, setDataUser] = useState({
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const router = useRouter();
 
+  const validatePassword = (pass: string) => {
+    if (pass.length > 0 && pass.length < 6) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        password: "La contraseña debe tener al menos 6 caracteres",
+      }));
+      return false;
+    }
+    setFieldErrors((prev) => ({ ...prev, password: "" }));
+    return true;
+  };
+
+  const validateConfirmPassword = (pass: string, confirm: string) => {
+    if (confirm.length > 0 && pass !== confirm) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        confirmPassword: "Las contraseñas no coinciden",
+      }));
+      return false;
+    }
+    setFieldErrors((prev) => ({ ...prev, confirmPassword: "" }));
+    return true;
+  };
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const isPassValid = validatePassword(dataUser.password);
+    const isConfirmValid = validateConfirmPassword(
+      dataUser.password,
+      dataUser.confirmPassword,
+    );
+
+    if (
+      !isPassValid ||
+      !isConfirmValid ||
+      dataUser.password !== dataUser.confirmPassword
+    ) {
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
 
     try {
-      const registerRresponse = await register(dataUser);
+      const registerRresponse = await register({
+        username: dataUser.username,
+        email: dataUser.email,
+        password: dataUser.password,
+      });
       if (!registerRresponse.success) {
         throw new Error(registerRresponse.error);
       }
 
       toast.info("Usuario registrado");
-
       const { username, password } = dataUser;
 
       const loginResponse = await signIn("credentials", {
@@ -85,7 +133,7 @@ export function RegisterForm() {
         </p>
       </div>
 
-      <form className="mt-8 space-y-6" onSubmit={onSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={onSubmit} noValidate>
         <div className="space-y-4">
           <div>
             <label htmlFor="username" className="sr-only">
@@ -141,13 +189,17 @@ export function RegisterForm() {
               <input
                 value={dataUser.password}
                 onChange={handleChange}
+                onBlur={() => validatePassword(dataUser.password)}
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                minLength={6}
-                className="block w-full rounded-xl border-0 py-3 pl-10 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 transition-all bg-gray-50/50 focus:bg-white"
+                className={`block w-full rounded-xl border-0 py-3 pl-10 pr-10 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 transition-all focus:bg-white ${
+                  fieldErrors.password
+                    ? "ring-red-500 bg-red-50"
+                    : "ring-gray-200 bg-gray-50/50"
+                }`}
                 placeholder="Contraseña (mín. 6 caracteres)"
               />
               <button
@@ -162,6 +214,59 @@ export function RegisterForm() {
                 )}
               </button>
             </div>
+            {fieldErrors.password && (
+              <p className="mt-1.5 ml-1 text-[11px] font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
+                {fieldErrors.password}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword" className="sr-only">
+              Confirmar Contraseña
+            </label>
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <Lock className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                value={dataUser.confirmPassword}
+                onChange={handleChange}
+                onBlur={() =>
+                  validateConfirmPassword(
+                    dataUser.password,
+                    dataUser.confirmPassword,
+                  )
+                }
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className={`block w-full rounded-xl border-0 py-3 pl-10 pr-10 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6 transition-all focus:bg-white ${
+                  fieldErrors.confirmPassword
+                    ? "ring-red-500 bg-red-50"
+                    : "ring-gray-200 bg-gray-50/50"
+                }`}
+                placeholder="Confirmar contraseña"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-400 hover:text-gray-600"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            {fieldErrors.confirmPassword && (
+              <p className="mt-1.5 ml-1 text-[11px] font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
           </div>
           {error && (
             <div className="bg-red-50 border border-red-500 p-3 rounded-md">
@@ -201,6 +306,7 @@ export function RegisterForm() {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
+            onClick={() => signIn("google", { callbackUrl: "/" })}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
