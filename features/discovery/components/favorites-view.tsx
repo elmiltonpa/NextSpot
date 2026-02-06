@@ -7,7 +7,19 @@ import { getFavorites } from "@/actions/favorites";
 import { PlaceResult } from "@/types/places";
 import { getPlaceDetails } from "@/actions/get-place-details";
 import { toast } from "sonner";
-import type { SavedPlace } from "@prisma/client";
+
+interface SavedPlace {
+  id: string;
+  userId: string;
+  googlePlaceId: string;
+  name: string;
+  address: string | null;
+  image: string | null;
+  rating: number | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface FavoritesViewProps {
   onBack: () => void;
