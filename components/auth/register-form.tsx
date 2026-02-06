@@ -360,6 +360,21 @@ export function RegisterForm() {
             Inicia sesión
           </Link>
         </p>
+
+        <div className="flex justify-center gap-4 pt-4 border-t border-gray-100">
+          <Link
+            href="/privacy"
+            className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-orange-600 transition-colors"
+          >
+            Privacidad
+          </Link>
+          <Link
+            href="/terms"
+            className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-orange-600 transition-colors"
+          >
+            Términos
+          </Link>
+        </div>
       </form>
     </div>
   );
