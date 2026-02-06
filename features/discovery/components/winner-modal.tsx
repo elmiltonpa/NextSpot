@@ -60,6 +60,7 @@ export function WinnerModal({ place }: WinnerModalProps) {
                 className="object-cover"
                 sizes="128px"
                 priority
+                unoptimized
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-orange-100 text-orange-400">

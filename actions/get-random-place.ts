@@ -26,10 +26,12 @@ export const getRandomPlace = async (
   radius: number,
   openNow: boolean | null = null,
 ) => {
-  const apiKey = process.env.MAPS_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_PLACES_API_KEY;
 
   if (!apiKey) {
-    throw new Error("Error de servidor: Falta la API Key de Google Maps.");
+    throw new Error(
+      "Error de servidor: Falta la API Key de Google Maps (NEXT_PUBLIC_PLACES_API_KEY).",
+    );
   }
 
   const url = "https://places.googleapis.com/v1/places:searchNearby";
@@ -43,6 +45,7 @@ export const getRandomPlace = async (
         "Content-Type": "application/json",
         "X-Goog-Api-Key": apiKey,
         "X-Goog-FieldMask": PLACE_FIELDS.join(","),
+        Referer: process.env.NEXTAUTH_URL || "http://localhost:3000",
       },
       body: JSON.stringify({
         locationRestriction: {
@@ -57,7 +60,15 @@ export const getRandomPlace = async (
     });
 
     if (!response.ok) {
-      throw new Error("Error al comunicarse con Google Maps.");
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Google Maps API Error:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+      });
+      throw new Error(
+        `Error de Google Maps: ${response.status} ${response.statusText}`,
+      );
     }
 
     const data = await response.json();
@@ -113,7 +124,13 @@ export const getRandomPlace = async (
     } catch {}
 
     return winner;
-  } catch {
-    return { error: "Ocurrió un error inesperado al buscar tu lugar." };
+  } catch (error) {
+    console.error("getRandomPlace Error:", error);
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error inesperado al buscar tu lugar.",
+    };
   }
 };

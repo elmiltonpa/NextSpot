@@ -130,6 +130,7 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 400px"
             priority
+            unoptimized
           />
         ) : (
           <div className="w-full h-full bg-gray-100 flex items-center justify-center">
