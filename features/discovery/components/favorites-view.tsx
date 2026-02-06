@@ -7,7 +7,7 @@ import { getFavorites } from "@/actions/favorites";
 import { PlaceResult } from "@/types/places";
 import { getPlaceDetails } from "@/actions/get-place-details";
 import { toast } from "sonner";
-import { SavedPlace } from "../../../lib/generated/prisma/client";
+import { SavedPlace } from "@prisma/client";
 
 interface FavoritesViewProps {
   onBack: () => void;
