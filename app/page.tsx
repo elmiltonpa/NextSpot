@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import MapView from "@/components/map/map-view";
 import { DiscoverySidebar } from "@/features/discovery";
 import { FloatingHeader } from "@/components/layout/floating-header";
+import { FloatingFooter } from "@/components/layout/floating-footer";
 import { PlaceAutocomplete } from "@/features/discovery/components/place-autocomplete";
 import { useLocation } from "@/context/location-context";
 import { useLocationFlow } from "@/hooks/use-location-flow";
@@ -103,6 +104,8 @@ export default function Home() {
             <ProfileButton />
 
             <DiscoverySidebar userLocation={userLocation} />
+
+            <FloatingFooter />
 
             {isWinnerModalOpen && selectedPlace && (
               <WinnerModal place={selectedPlace} />

@@ -26,7 +26,10 @@ export default function TermsPage() {
               1. Aceptación de los términos
             </h2>
             <p className="leading-relaxed text-slate-600">
-              Al acceder y utilizar NextSpot, aceptas cumplir y estar sujeto a los siguientes términos y condiciones de uso. Si no estás de acuerdo con alguna parte de estos términos, no podrás utilizar nuestros servicios.
+              Al acceder y utilizar NextSpot, aceptas cumplir y estar sujeto a
+              los siguientes términos y condiciones de uso. Si no estás de
+              acuerdo con alguna parte de estos términos, no podrás utilizar
+              nuestros servicios.
             </p>
           </section>
 
@@ -35,12 +38,19 @@ export default function TermsPage() {
               2. Uso del servicio
             </h2>
             <p className="leading-relaxed text-slate-600">
-              NextSpot es una herramienta de descubrimiento de lugares basada en la ubicación. Te comprometes a:
+              NextSpot es una herramienta de descubrimiento de lugares basada en
+              la ubicación. Te comprometes a:
             </p>
             <ul className="list-disc ml-6 mt-4 space-y-2 text-slate-600">
               <li>Utilizar el servicio de manera legal y ética.</li>
-              <li>No intentar extraer datos de forma automatizada (scraping) sin autorización.</li>
-              <li>No interferir con la seguridad o el funcionamiento de la plataforma.</li>
+              <li>
+                No intentar extraer datos de forma automatizada (scraping) sin
+                autorización.
+              </li>
+              <li>
+                No interferir con la seguridad o el funcionamiento de la
+                plataforma.
+              </li>
             </ul>
           </section>
 
@@ -49,7 +59,10 @@ export default function TermsPage() {
               3. Propiedad Intelectual
             </h2>
             <p className="leading-relaxed text-slate-600">
-              El diseño, el código y los logotipos de NextSpot son propiedad intelectual de sus creadores. Los datos de los lugares y los mapas son proporcionados por Google Maps y están sujetos a sus propios derechos de autor.
+              El diseño, el código y los logotipos de NextSpot son propiedad
+              intelectual de sus creadores. Los datos de los lugares y los mapas
+              son proporcionados por Google Maps y están sujetos a sus propios
+              derechos de autor.
             </p>
           </section>
 
@@ -58,7 +71,10 @@ export default function TermsPage() {
               4. Limitación de responsabilidad
             </h2>
             <p className="leading-relaxed text-slate-600">
-              NextSpot proporciona información basada en servicios de terceros. No garantizamos la exactitud, disponibilidad o estado de los lugares mostrados. El uso de la información para navegar o visitar establecimientos es bajo tu propio riesgo.
+              NextSpot proporciona información basada en servicios de terceros.
+              No garantizamos la exactitud, disponibilidad o estado de los
+              lugares mostrados. El uso de la información para navegar o visitar
+              establecimientos es bajo tu propio riesgo.
             </p>
           </section>
 
@@ -67,16 +83,9 @@ export default function TermsPage() {
               5. Modificaciones
             </h2>
             <p className="leading-relaxed text-slate-600">
-              Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuado de la aplicación tras dichos cambios constituirá tu aceptación de los nuevos términos.
-            </p>
-          </section>
-
-          <section className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
-            <h2 className="text-lg font-bold text-orange-900 mb-2">
-              Nota Legal
-            </h2>
-            <p className="text-orange-800 text-sm">
-              Este es un proyecto diseñado para mejorar la experiencia de descubrimiento de ciudades. Disfruta explorando de manera responsable.
+              Nos reservamos el derecho de modificar estos términos en cualquier
+              momento. El uso continuado de la aplicación tras dichos cambios
+              constituirá tu aceptación de los nuevos términos.
             </p>
           </section>
         </div>
