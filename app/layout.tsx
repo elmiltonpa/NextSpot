@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "NextSpot",
   description: "Descubre lugares aleatorios",
+  verification: {
+    google: "cyhjRkYU-BTDi7jrXHPDeob1KazD8W3iZpUk8yDOP20",
+  },
 };
 
 export default async function RootLayout({
