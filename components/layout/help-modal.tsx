@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { X, MapPin, Sliders, Sparkles } from "lucide-react";
 
 interface HelpModalProps {
@@ -9,31 +8,18 @@ interface HelpModalProps {
 }
 
 export function HelpModal({ isOpen, onClose }: HelpModalProps) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => setIsVisible(true), 10);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
-    }
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal Content */}
-      <div
-        className={`relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${isVisible ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-10"}`}
-      >
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-20 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors"
@@ -52,41 +38,47 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           </div>
 
           <div className="space-y-8">
-            {/* Step 1 */}
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+              <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 text-sm">1. Define tu ubicación</h3>
+                <h3 className="font-bold text-slate-800 text-sm">
+                  1. Define tu ubicación
+                </h3>
                 <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-                  Haz doble clic en cualquier parte del mapa o usa el buscador para situarte donde quieras.
+                  Haz doble clic en cualquier parte del mapa o usa el buscador
+                  para situarte donde quieras.
                 </p>
               </div>
             </div>
 
-            {/* Step 2 */}
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
+              <div className="shrink-0 w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
                 <Sliders className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 text-sm">2. Ajusta tus preferencias</h3>
+                <h3 className="font-bold text-slate-800 text-sm">
+                  2. Ajusta tus preferencias
+                </h3>
                 <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-                  Elige categorías, distancia máxima y presupuesto en el panel lateral izquierdo.
+                  Elige categorías, distancia máxima y presupuesto en el panel
+                  lateral izquierdo.
                 </p>
               </div>
             </div>
 
-            {/* Step 3 */}
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500">
+              <div className="shrink-0 w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 text-sm">3. ¡Deja que ocurra la magia!</h3>
+                <h3 className="font-bold text-slate-800 text-sm">
+                  3. ¡Deja que ocurra la magia!
+                </h3>
                 <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-                  Pulsa el botón "Sorpréndeme" y nosotros elegiremos el mejor lugar para ti aleatoriamente.
+                  Pulsa el botón &quot;Sorpréndeme&quot; y nosotros elegiremos
+                  el mejor lugar para ti aleatoriamente.
                 </p>
               </div>
             </div>
