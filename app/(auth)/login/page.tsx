@@ -15,7 +15,6 @@ export default async function LoginPage() {
           NextSpot
         </h1>
       </div>
-
       <LoginForm />
     </div>
   );

@@ -38,12 +38,6 @@ export function FloatingFooter() {
 
           <div className="h-4 w-px bg-slate-200" />
 
-          <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
-            Powered by <span className="text-slate-500 font-bold">Google</span>
-          </span>
-
-          <div className="h-4 w-px bg-slate-200" />
-
           <button
             onClick={() => setIsHelpOpen(true)}
             className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-blue-600 transition-colors cursor-help"

@@ -14,10 +14,12 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { getAuthErrorMessage } from "@/lib/auth-errors";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
@@ -36,18 +38,20 @@ export function LoginForm() {
       const response = await signIn("credentials", {
         username: formData.username,
         password: formData.password,
+        rememberMe: rememberMe,
         redirect: false,
       });
 
       if (response?.error) {
-        setError("Credenciales invalidas");
+        const errorCode = response.code || response.error;
+        setError(getAuthErrorMessage(errorCode));
       } else {
         toast.success("¡Bienvenido de nuevo!");
         router.push("/");
         router.refresh();
       }
     } catch {
-      setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
+      setError(getAuthErrorMessage(null));
     } finally {
       setIsLoading(false);
     }
@@ -127,6 +131,23 @@ export function LoginForm() {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            id="rememberMe"
+            name="rememberMe"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 accent-orange-600 cursor-pointer transition-all"
+          />
+          <label
+            htmlFor="rememberMe"
+            className="ml-2 block text-sm text-gray-700 cursor-pointer select-none hover:text-orange-600 transition-colors"
+          >
+            Recordarme
+          </label>
         </div>
 
         {error && (
