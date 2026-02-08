@@ -26,6 +26,15 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-orange-50 via-white to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mb-8 text-center opacity-20 select-none animate-in fade-in slide-in-from-top-4 duration-700">
+        <h1 className="text-4xl font-black text-orange-600 tracking-tighter">
+          NextSpot
+        </h1>
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mt-1">
+          Discovery Engine
+        </p>
+      </div>
+
       <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-3xl shadow-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-500">
         <div className="flex items-center justify-between">
           <Link
@@ -109,15 +118,6 @@ export default async function ProfilePage({ params }: Props) {
             <DeleteAccountButton />
           </div>
         )}
-      </div>
-
-      <div className="mt-12 text-center opacity-30 select-none">
-        <h1 className="text-3xl font-black text-orange-600 tracking-tighter">
-          NextSpot
-        </h1>
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">
-          Discovery Engine
-        </p>
       </div>
     </div>
   );
