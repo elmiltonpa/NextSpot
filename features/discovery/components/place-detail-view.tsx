@@ -1,7 +1,7 @@
 import { ArrowLeft, MapPin, Star, Navigation, Heart } from "lucide-react";
 import { PlaceResult } from "@/types/places";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useOptimistic, useTransition } from "react";
 import { checkFavorite, toggleFavorite } from "@/actions/favorites";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,12 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
   const { status } = useSession();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoadingFavorite, setIsLoadingFavorite] = useState(true);
+  const [isPending, startTransition] = useTransition();
+
+  const [optimisticFavorite, addOptimisticFavorite] = useOptimistic(
+    isFavorite,
+    (_, newState: boolean) => newState,
+  );
 
   const photoName = place.photos?.[0]?.name;
   const photoUrl = photoName
@@ -67,30 +73,31 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
 
     if (!place.id) return;
 
-    const previousState = isFavorite;
-    setIsFavorite(!isFavorite);
+    startTransition(async () => {
+      addOptimisticFavorite(!isFavorite);
 
-    try {
-      const result = await toggleFavorite({
-        googlePlaceId: place.id,
-        name: place.displayName.text,
-        address: place.formattedAddress,
-        image: place.photos?.[0]?.name,
-        rating: place.rating,
-      });
+      try {
+        const result = await toggleFavorite({
+          googlePlaceId: place.id,
+          name: place.displayName.text,
+          address: place.formattedAddress,
+          image: place.photos?.[0]?.name,
+          rating: place.rating,
+        });
 
-      if (!result.success) {
-        throw new Error(result.error);
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+
+        setIsFavorite(result.isFavorite!);
+        toast.success(
+          result.isFavorite ? "Añadido a favoritos" : "Eliminado de favoritos",
+        );
+      } catch (error) {
+        toast.error("Error al actualizar favoritos");
+        console.error(error);
       }
-
-      setIsFavorite(result.isFavorite!);
-      toast.success(
-        result.isFavorite ? "Añadido a favoritos" : "Eliminado de favoritos",
-      );
-    } catch {
-      setIsFavorite(previousState);
-      toast.error("Error al actualizar favoritos");
-    }
+    });
   };
 
   return (
@@ -107,14 +114,16 @@ export function PlaceDetailView({ place, onBack }: PlaceDetailViewProps) {
 
           <button
             onClick={handleToggleFavorite}
-            disabled={isLoadingFavorite}
+            disabled={isLoadingFavorite || isPending}
             className="p-2.5 rounded-full bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-all active:scale-95 group"
-            title={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+            title={
+              optimisticFavorite ? "Quitar de favoritos" : "Añadir de favoritos"
+            }
           >
             <Heart
               className={cn(
                 "h-5 w-5 transition-colors",
-                isFavorite
+                optimisticFavorite
                   ? "fill-red-500 text-red-500"
                   : "text-gray-700 group-hover:text-red-500",
               )}
