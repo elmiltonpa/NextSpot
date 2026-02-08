@@ -1,33 +1,35 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/lib/auth";
 
 const PUBLIC_ROUTES = ["/login", "/register", "/"];
 
-export async function proxy(req: NextRequest) {
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET,
-  });
-
+export default auth(async function middleware(req) {
   const { pathname } = req.nextUrl;
+  const isLoggedIn = !!req.auth;
 
   const normalizedPath =
     pathname.endsWith("/") && pathname !== "/"
       ? pathname.slice(0, -1)
       : pathname;
 
-  const isLoggedIn = !!token;
   const isPublic = PUBLIC_ROUTES.includes(normalizedPath);
 
   if (
     isLoggedIn &&
     (normalizedPath === "/login" || normalizedPath === "/register")
   ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
-  if (!isLoggedIn && !isPublic) {
+  const segments = pathname.split("/").filter(Boolean);
+  const isProfileRoute = segments.length === 1;
+
+  if (
+    !isLoggedIn &&
+    !isPublic &&
+    !isProfileRoute &&
+    !pathname.startsWith("/api")
+  ) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
@@ -41,7 +43,7 @@ export async function proxy(req: NextRequest) {
   response.headers.set("Permissions-Policy", "geolocation=(self)");
 
   return response;
-}
+});
 
 export const config = {
   matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|public).*)"],
