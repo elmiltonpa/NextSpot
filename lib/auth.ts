@@ -5,6 +5,16 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import type { Adapter, AdapterUser } from "next-auth/adapters";
+import { LoginSchema } from "@/lib/schemas";
+import { isRateLimited } from "@/lib/rate-limit";
+import { headers } from "next/headers";
+import {
+  RateLimitError,
+  AccountLockedError,
+  MaxAttemptsError,
+  SocialAccountError,
+  InvalidCredentialsError,
+} from "@/lib/auth-errors";
 
 async function generateUniqueUsername(email: string): Promise<string> {
   const baseUsername =
@@ -70,38 +80,80 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
     Credentials({
       credentials: {
-        username: { label: "Username", type: "text" },
+        username: { label: "Username or email", type: "text" },
         password: { label: "Password", type: "password" },
+        rememberMe: { label: "Remember me", type: "checkbox" },
       },
       authorize: async (credentials) => {
-        const username = credentials?.username as string | undefined;
-        const password = credentials?.password as string | undefined;
+        const headerList = await headers();
+        const ip =
+          headerList.get("x-forwarded-for")?.split(",")[0] || "unknown";
 
-        if (!username || !password) {
-          return null;
+        if (isRateLimited(ip)) {
+          throw new RateLimitError();
         }
 
-        const user = await prisma.user.findUnique({
-          where: { username },
+        const parsedCredentials = LoginSchema.safeParse({
+          username: credentials?.username,
+          password: credentials?.password,
+          rememberMe: credentials?.rememberMe === "true",
+        });
+
+        if (!parsedCredentials.success) {
+          throw new InvalidCredentialsError();
+        }
+
+        const { username, password, rememberMe } = parsedCredentials.data;
+
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [{ username: username }, { email: username }],
+          },
         });
 
         if (!user) {
-          return null;
+          throw new InvalidCredentialsError();
+        }
+
+        if (user.lockedUntil && user.lockedUntil > new Date()) {
+          throw new AccountLockedError();
         }
 
         if (!user.password) {
-          throw new Error(
-            "Cuenta registrada con proveedor social (Google/GitHub).",
-          );
+          throw new SocialAccountError();
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-          return null;
+          const currentAttempts = user.failedLoginAttempts ?? 0;
+          const attempts = currentAttempts + 1;
+
+          if (attempts >= 5) {
+            const lockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { failedLoginAttempts: attempts, lockedUntil: lockedUntil },
+            });
+            throw new MaxAttemptsError();
+          } else {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { failedLoginAttempts: attempts },
+            });
+          }
+
+          throw new InvalidCredentialsError();
         }
 
-        return user;
+        if (user.failedLoginAttempts > 0 || user.lockedUntil) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { failedLoginAttempts: 0, lockedUntil: null },
+          });
+        }
+
+        return { ...user, rememberMe };
       },
     }),
   ],
@@ -130,10 +182,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
 
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.username = user.username;
+
+        const thirtyDays = 30 * 24 * 60 * 60;
+        const twentyFourHours = 24 * 60 * 60;
+
+        if (account?.provider === "google") {
+          token.exp = Math.floor(Date.now() / 1000) + thirtyDays;
+        } else if (account?.provider === "credentials") {
+          if (user.rememberMe) {
+            token.exp = Math.floor(Date.now() / 1000) + thirtyDays;
+          } else {
+            token.exp = Math.floor(Date.now() / 1000) + twentyFourHours;
+          }
+        }
       }
 
       if (trigger === "update" && session?.username) {
