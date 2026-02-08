@@ -18,7 +18,7 @@ import {
 
 async function generateUniqueUsername(email: string): Promise<string> {
   const baseUsername =
-    email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "") || "user";
+    email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "").substring(0, 8) || "user";
 
   const existingUser = await prisma.user.findUnique({
     where: { username: baseUsername },
@@ -28,8 +28,9 @@ async function generateUniqueUsername(email: string): Promise<string> {
     return baseUsername;
   }
 
-  const suffix = Math.floor(1000 + Math.random() * 9000);
-  return `${baseUsername}_${suffix}`;
+  const suffix = Math.floor(1000 + Math.random() * 9000); // 4 digits
+  const shortBase = baseUsername.substring(0, 8); // Ensure base + suffix <= 13 (8 + 1 + 4 = 13)
+  return `${shortBase}_${suffix}`;
 }
 
 function CustomPrismaAdapter(): Adapter {

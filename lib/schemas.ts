@@ -10,7 +10,7 @@ export const RegisterSchema = z.object({
   username: z
     .string()
     .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
-    .max(20, "El nombre de usuario no puede tener más de 20 caracteres")
+    .max(13, "El nombre de usuario no puede tener más de 13 caracteres")
     .regex(
       /^[a-zA-Z0-9_]+$/,
       "Solo se permiten letras, números y guiones bajos",

@@ -39,8 +39,8 @@ export function ProfileButton() {
             )}
           </div>
           <div className="flex flex-col items-start leading-none">
-            <span className="text-xs font-bold text-gray-800 max-w-20 truncate">
-              {session.user?.name || "Usuario"}
+            <span className="text-xs font-bold text-gray-800 max-w-[100px] truncate">
+              {session.user?.username?.substring(0, 13) || "Usuario"}
             </span>
             <span className="text-[9px] font-medium text-orange-600 uppercase tracking-wide">
               Mi Cuenta
