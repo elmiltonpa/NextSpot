@@ -1,10 +1,17 @@
 # 📍 NextSpot — Discovery Engine
 
-NextSpot is a modern geospatial discovery platform designed to help users explore and save interesting places nearby. Built with a focus on **performance, security, and scalable architecture**, it demonstrates a professional approach to full-stack development using the latest React and Next.js ecosystems.
+**NextSpot** is a modern geospatial discovery platform designed to help users explore and save interesting places nearby. Built with a focus on **performance, security, and scalable architecture**, it demonstrates a professional approach to full-stack development using the latest React and Next.js ecosystems.
 
-> **Note:** This project implements a **Feature-Sliced Design** approach to manage complexity and ensure maintainability.
+## 🌟 The Vision
 
-## 🚀 Technical Highlights (Recruiter Focus)
+NextSpot is designed to solve "decision paralysis" when looking for places to go. Unlike traditional search engines that require specific queries, NextSpot acts as a **Discovery Engine**. It allows users to explore their surroundings visually and intuitively, transforming a simple map into a curated list of experiences tailored to their current needs—whether it's a quiet cafe to work in or a top-rated restaurant for a night out.
+
+### Key User Features:
+- **Intuitive Exploration:** A dynamic map interface that reacts instantly to filters, providing immediate visual feedback.
+- **"Surprise Me" Engine:** A feature for the indecisive, selecting a highly-rated nearby spot with a single click.
+- **Personalized Memory:** Users can build a personal atlas by saving favorites and tracking their discovery history.
+
+## 🚀 Technical Highlights
 
 ### 🏗️ Architecture & Design Patterns
 - **Feature-Sliced Design (FSD):** Organized by business domains (`features/discovery`) rather than just technical roles. This desacouples logic, making the codebase highly scalable and easier to navigate for large teams.
