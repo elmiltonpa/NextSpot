@@ -12,7 +12,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       if (item) {
         setStoredValue(JSON.parse(item));
       }
-    } catch (error) {
+    } catch {
       // Silently fail
     } finally {
       setIsInitialized(true);
@@ -29,7 +29,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       if (typeof window !== "undefined") {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
-    } catch (error) {
+    } catch {
       // Silently fail
     }
   };
