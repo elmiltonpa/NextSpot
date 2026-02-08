@@ -2,27 +2,22 @@
 
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { Form } from "../types/form";
+import { RegisterSchema } from "@/lib/schemas";
 
 type RegisterResponse = { success: true } | { success: false; error: string };
 
-export const register = async (formData: Form): Promise<RegisterResponse> => {
-  const { username, email, password } = formData;
-
+export const register = async (values: unknown): Promise<RegisterResponse> => {
   try {
-    if (!username || !email || !password) {
+    const validatedFields = RegisterSchema.safeParse(values);
+
+    if (!validatedFields.success) {
       return {
         success: false,
-        error: "Todos los campos son obligatorios",
+        error: validatedFields.error.issues[0].message,
       };
     }
 
-    if (password.length < 6) {
-      return {
-        success: false,
-        error: "La contraseña debe tener al menos 6 caracteres",
-      };
-    }
+    const { username, email, password } = validatedFields.data;
 
     const existingUser = await prisma.user.findFirst({
       where: { OR: [{ username: username }, { email: email }] },
@@ -43,13 +38,14 @@ export const register = async (formData: Form): Promise<RegisterResponse> => {
 
     await prisma.user.create({
       data: {
-        username: username.toString(),
-        email: email.toString(),
+        username,
+        email,
         password: hashedPassword,
       },
     });
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error("Register error:", error);
     return {
       success: false,
       error: "Error interno del sistema. Inténtalo más tarde.",

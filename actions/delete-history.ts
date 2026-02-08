@@ -12,7 +12,6 @@ export async function deleteHistoryItem(id: string) {
   }
 
   try {
-    // Verificamos que el item pertenezca al usuario antes de borrar
     const item = await prisma.searchHistory.findUnique({
       where: { id },
     });

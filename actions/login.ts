@@ -1,36 +1,35 @@
 "use server";
-// SI USAR
+
 import { signIn } from "@/lib/auth";
 import { AuthError } from "next-auth";
-import { Form } from "../types/form";
+import { LoginSchema } from "@/lib/schemas";
 
-type LoginResponse = {
-  success: boolean;
-  error: string;
-};
+export const login = async (values: unknown) => {
+  const validatedFields = LoginSchema.safeParse(values);
 
-export const login = async (
-  formData: Pick<Form, "username" | "password">,
-): Promise<LoginResponse> => {
-  const { username, password } = formData;
+  if (!validatedFields.success) {
+    return { error: "Campos inválidos" };
+  }
+
+  const { username, password, rememberMe } = validatedFields.data;
 
   try {
     await signIn("credentials", {
       username,
       password,
+      rememberMe: rememberMe ? "true" : "false",
       redirect: false,
     });
 
-    return { success: true, error: "" };
+    return { success: true };
   } catch (error) {
     if (error instanceof AuthError) {
-      const customError = error.cause?.err?.message;
-
-      if (customError?.includes("proveedor social")) {
-        return { success: false, error: customError };
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "Credenciales inválidas" };
+        default:
+          return { error: "Algo salió mal" };
       }
-
-      return { success: false, error: "Usuario o contraseña incorrectos" };
     }
 
     throw error;
