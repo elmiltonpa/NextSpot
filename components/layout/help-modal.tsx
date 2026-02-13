@@ -11,14 +11,12 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div
         className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal Content */}
       <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         <button
           onClick={onClose}

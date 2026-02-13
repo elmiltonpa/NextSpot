@@ -14,7 +14,7 @@ import { AvailabilitySelector } from "./availability-selector";
 import { PlaceDetailView } from "./place-detail-view";
 import { HistoryView } from "./history-view";
 import { FavoritesView } from "./favorites-view";
-import { ArrowRight, History, Heart, ChevronRight } from "lucide-react";
+import { ArrowRight, History, Heart, ChevronRight, Info } from "lucide-react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -58,8 +58,12 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
     "search" | "details" | "history" | "favorites"
   >("search");
 
-  const { selectedPlace, setSelectedPlace, setIsWinnerModalOpen } =
-    useLocation();
+  const {
+    selectedPlace,
+    setSelectedPlace,
+    setIsWinnerModalOpen,
+    setIsHelpModalOpen,
+  } = useLocation();
 
   const setCategories = (categories: CategoryKey[]) =>
     setFilters((prev) => ({ ...prev, categories }));
@@ -177,24 +181,33 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
             <div className="p-6 pb-0">
               <div className="flex items-center justify-between mb-1">
                 <h1 className="text-2xl font-bold text-gray-900">Descubre</h1>
-                {status === "authenticated" && (
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setViewMode("history")}
-                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-orange-500 transition-colors"
-                      title="Ver Historial"
-                    >
-                      <History className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => setViewMode("favorites")}
-                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-red-500 transition-colors"
-                      title="Ver Favoritos"
-                    >
-                      <Heart className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setIsHelpModalOpen(true)}
+                    className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-blue-500 transition-colors"
+                    title="Ayuda"
+                  >
+                    <Info className="h-5 w-5" />
+                  </button>
+                  {status === "authenticated" && (
+                    <>
+                      <button
+                        onClick={() => setViewMode("history")}
+                        className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-orange-500 transition-colors"
+                        title="Ver Historial"
+                      >
+                        <History className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => setViewMode("favorites")}
+                        className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-red-500 transition-colors"
+                        title="Ver Favoritos"
+                      >
+                        <Heart className="h-5 w-5" />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
               <p className="text-sm text-gray-500">
                 Encuentra el lugar perfecto para ti

@@ -13,6 +13,9 @@ type LocationContextType = {
 
   isWinnerModalOpen: boolean;
   setIsWinnerModalOpen: (open: boolean) => void;
+
+  isHelpModalOpen: boolean;
+  setIsHelpModalOpen: (open: boolean) => void;
 };
 
 const LocationContext = createContext<LocationContextType | null>(null);
@@ -22,6 +25,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
 
   const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   const [isWinnerModalOpen, setIsWinnerModalOpen] = useState(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
   const value = useMemo(
     () => ({
@@ -31,8 +35,10 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
       setSelectedPlace,
       isWinnerModalOpen,
       setIsWinnerModalOpen,
+      isHelpModalOpen,
+      setIsHelpModalOpen,
     }),
-    [userLocation, selectedPlace, isWinnerModalOpen],
+    [userLocation, selectedPlace, isWinnerModalOpen, isHelpModalOpen],
   );
 
   return (

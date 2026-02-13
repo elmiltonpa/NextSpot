@@ -12,11 +12,18 @@ import { useLocation } from "@/context/location-context";
 import { useLocationFlow } from "@/hooks/use-location-flow";
 import { WinnerModal } from "@/features/discovery/components/winner-modal";
 import { ProfileButton } from "@/components/layout/profile-button";
+import { HelpModal } from "@/components/layout/help-modal";
 
 const API_KEY = process.env.NEXT_PUBLIC_PLACES_API_KEY || "";
 
 export default function Home() {
-  const { userLocation, selectedPlace, isWinnerModalOpen } = useLocation();
+  const {
+    userLocation,
+    selectedPlace,
+    isWinnerModalOpen,
+    isHelpModalOpen,
+    setIsHelpModalOpen,
+  } = useLocation();
   const { status, setStatus, handleLocationSelect, tryRecoverFromStorage } =
     useLocationFlow();
 
@@ -110,6 +117,11 @@ export default function Home() {
             {isWinnerModalOpen && selectedPlace && (
               <WinnerModal place={selectedPlace} />
             )}
+
+            <HelpModal
+              isOpen={isHelpModalOpen}
+              onClose={() => setIsHelpModalOpen(false)}
+            />
           </>
         )}
       </main>

@@ -1,18 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { Info } from "lucide-react";
 import Link from "next/link";
-import { HelpModal } from "./help-modal";
+import { useLocation } from "@/context/location-context";
 
 export function FloatingFooter() {
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const { setIsHelpModalOpen } = useLocation();
 
   return (
     <>
       <div className="fixed bottom-4 right-4 z-40 flex items-center gap-2 pointer-events-none">
-        <div className="hidden md:flex items-center gap-3 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200/50 shadow-sm pointer-events-auto h-10">
-          <div className="flex items-baseline gap-1 mr-1">
+        <div className="flex items-center gap-2 md:gap-3 bg-white/90 backdrop-blur-md p-1.5 md:px-4 md:py-2 rounded-2xl border border-slate-200/50 shadow-sm pointer-events-auto h-10">
+          <div className="hidden sm:flex items-baseline gap-1 mr-1">
             <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
               NextSpot
             </span>
@@ -21,29 +20,31 @@ export function FloatingFooter() {
             </span>
           </div>
 
-          <div className="h-4 w-px bg-slate-200" />
+          <div className="hidden sm:block h-4 w-px bg-slate-200" />
 
           <Link
             href="/privacy"
-            className="text-[10px] font-semibold text-slate-500 hover:text-orange-600 transition-colors whitespace-nowrap"
+            className="hidden md:block text-[10px] font-semibold text-slate-500 hover:text-orange-600 transition-colors whitespace-nowrap"
           >
             Privacidad
           </Link>
           <Link
             href="/terms"
-            className="text-[10px] font-semibold text-slate-500 hover:text-orange-600 transition-colors whitespace-nowrap"
+            className="hidden md:block text-[10px] font-semibold text-slate-500 hover:text-orange-600 transition-colors whitespace-nowrap"
           >
             Términos
           </Link>
 
-          <div className="h-4 w-px bg-slate-200" />
+          <div className="hidden md:block h-4 w-px bg-slate-200" />
 
           <button
-            onClick={() => setIsHelpOpen(true)}
-            className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-blue-600 transition-colors cursor-help"
+            onClick={() => setIsHelpModalOpen(true)}
+            className="flex items-center justify-center gap-1.5 h-7 md:h-auto px-2 md:px-0 text-[10px] font-bold text-slate-700 hover:text-blue-600 transition-colors cursor-help bg-slate-50 md:bg-transparent rounded-lg"
+            title="Ayuda"
           >
-            <Info className="h-3 w-3" />
-            <span>Ayuda</span>
+            <Info className="h-4 w-4 md:h-3 md:w-3 text-blue-500 md:text-inherit" />
+            <span className="hidden md:inline">Ayuda</span>
+            <span className="md:hidden">Ayuda</span>
           </button>
         </div>
 
@@ -65,8 +66,6 @@ export function FloatingFooter() {
           </span>
         </Link>
       </div>
-
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </>
   );
 }
