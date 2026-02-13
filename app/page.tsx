@@ -35,6 +35,9 @@ export default function Home() {
       }
     };
 
+    const recovered = tryRecoverFromStorage();
+    if (recovered) return;
+
     if (!navigator.geolocation) {
       handleGeoError();
       return;
