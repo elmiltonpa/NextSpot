@@ -9,6 +9,7 @@ import {
   User,
   ArrowRight,
   AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -67,13 +68,22 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-      <div className="text-center">
-        <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-          Bienvenido de nuevo
-        </h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Inicia sesión para continuar explorando.
-        </p>
+      <div className="relative">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-orange-600 transition-colors mb-6 group"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          Volver al mapa
+        </Link>
+        <div className="text-center">
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+            Bienvenido de nuevo
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Inicia sesión para continuar explorando.
+          </p>
+        </div>
       </div>
 
       <form className="mt-8 space-y-6" onSubmit={onSubmit}>

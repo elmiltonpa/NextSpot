@@ -9,6 +9,7 @@ import {
   Lock,
   User,
   ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { register } from "@/actions/register";
@@ -124,13 +125,22 @@ export function RegisterForm() {
 
   return (
     <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-      <div className="text-center">
-        <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-          Crea tu cuenta
-        </h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Únete para guardar tus lugares favoritos y descubrir más.
-        </p>
+      <div className="relative">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-orange-600 transition-colors mb-6 group"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          Volver al mapa
+        </Link>
+        <div className="text-center">
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+            Crea tu cuenta
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Únete para guardar tus lugares favoritos y descubrir más.
+          </p>
+        </div>
       </div>
 
       <form className="mt-8 space-y-6" onSubmit={onSubmit} noValidate>

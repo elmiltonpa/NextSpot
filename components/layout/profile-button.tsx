@@ -22,10 +22,10 @@ export function ProfileButton() {
       {session ? (
         <Link
           href={`/${session.user.username}`}
-          className="group flex items-center gap-2 rounded-full bg-white/90 p-1 pr-4 shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105 active:scale-95 border border-gray-200/50"
+          className="group flex items-center gap-2 rounded-full bg-white/90 p-1 md:pr-4 shadow-lg backdrop-blur-md transition-all hover:bg-white hover:scale-105 active:scale-95 border border-gray-200/50"
           title="Ir a mi perfil"
         >
-          <div className="relative h-9 w-9 overflow-hidden rounded-full bg-orange-100 flex items-center justify-center border-2 border-white shadow-sm">
+          <div className="relative h-8 w-8 md:h-9 md:w-9 overflow-hidden rounded-full bg-orange-100 flex items-center justify-center border-2 border-white shadow-sm">
             {session.user?.image ? (
               <Image
                 src={session.user.image}
@@ -35,11 +35,11 @@ export function ProfileButton() {
                 unoptimized
               />
             ) : (
-              <UserIcon className="h-5 w-5 text-orange-600" />
+              <UserIcon className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
             )}
           </div>
-          <div className="flex flex-col items-start leading-none">
-            <span className="text-xs font-bold text-gray-800 max-w-[100px] truncate">
+          <div className="hidden md:flex flex-col items-start leading-none">
+            <span className="text-xs font-bold text-gray-800 max-w-25 truncate">
               {session.user?.username?.substring(0, 13) || "Usuario"}
             </span>
             <span className="text-[9px] font-medium text-orange-600 uppercase tracking-wide">
@@ -53,7 +53,7 @@ export function ProfileButton() {
           className="group flex h-10 items-center gap-2 rounded-full bg-white/90 px-4 shadow-lg backdrop-blur-md transition-all hover:bg-gray-900 hover:text-white active:scale-95 border border-gray-200/50"
         >
           <LogIn className="h-4 w-4" />
-          <span className="text-sm font-bold">Ingresar</span>
+          <span className="hidden sm:inline text-sm font-bold">Ingresar</span>
         </Link>
       )}
     </div>

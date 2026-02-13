@@ -125,7 +125,7 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
   return (
     <div
       className={cn(
-        "fixed top-0 left-0 bottom-0 z-50 pointer-events-none w-full max-w-100 transition-transform duration-500 ease-in-out",
+        "fixed top-0 left-0 bottom-0 z-50 pointer-events-none w-70 sm:w-87.5 md:w-100 transition-transform duration-500 ease-in-out",
         !isOpen && "-translate-x-full",
       )}
     >
@@ -138,8 +138,8 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "absolute -right-10 top-1/2 -translate-y-1/2 bg-orange-500 shadow-lg shadow-orange-200 rounded-r-xl p-2 cursor-pointer transition-all hover:bg-orange-600 group",
-            !isOpen && "rounded-xl -right-12",
+            "absolute -right-12 top-1/2 -translate-y-1/2 bg-orange-500 shadow-lg shadow-orange-200 rounded-r-2xl p-3 cursor-pointer transition-all hover:bg-orange-600 group active:scale-95",
+            !isOpen && "rounded-2xl -right-14",
           )}
           title={isOpen ? "Ocultar panel" : "Mostrar panel"}
         >

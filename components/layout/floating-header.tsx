@@ -15,8 +15,14 @@ export function FloatingHeader({ onLocationChangeAction }: Props) {
   const { userLocation } = useLocation();
   return (
     <>
-      <header className="fixed top-4 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
+      <header className="fixed top-4 left-4 right-4 z-40 flex justify-start md:justify-center pointer-events-none">
         <div className="flex items-center rounded-full bg-white/95 p-0.5 shadow-lg backdrop-blur-md transition-all hover:bg-white pointer-events-auto border border-gray-200/50">
+          <div className="flex items-center px-2 py-1 border-r border-gray-100 mr-1">
+            <span className="text-[10px] font-black text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded-md uppercase tracking-wider border border-orange-100">
+              Beta
+            </span>
+          </div>
+
           <button
             className="group flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
             title="Ir a mi ubicación"
@@ -37,7 +43,7 @@ export function FloatingHeader({ onLocationChangeAction }: Props) {
             onClick={() => setIsModalOpen(true)}
             className="cursor-pointer flex items-center px-3 py-1 hover:opacity-70 transition-opacity"
           >
-            <span className="text-sm font-bold text-gray-800 leading-none">
+            <span className="text-sm font-bold text-gray-800 leading-none max-w-30 md:max-w-none truncate">
               Cambiar ubicación
             </span>
           </button>
