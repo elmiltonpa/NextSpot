@@ -3,6 +3,7 @@
 import { PlaceResult } from "@/types/places";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PRICE_LEVEL_MAPPING } from "@/constants/categories";
 
 const PLACE_FIELDS = [
   "places.id",
@@ -13,16 +14,81 @@ const PLACE_FIELDS = [
   "places.userRatingCount",
   "places.currentOpeningHours",
   "places.primaryTypeDisplayName",
+  "places.primaryType",
+  "places.types",
   "places.photos",
   "places.googleMapsUri",
   "places.location",
 ];
 
+const ALWAYS_EXCLUDED_PRIMARY_TYPES = [
+  "lodging",
+  "hotel",
+  "motel",
+  "resort_hotel",
+  "extended_stay_hotel",
+  "guest_house",
+  "hostel",
+  "bed_and_breakfast",
+  "campground",
+  "rv_park",
+  "gas_station",
+  "car_dealer",
+  "car_repair",
+  "car_wash",
+  "parking",
+  "transit_station",
+  "hospital",
+  "dentist",
+  "doctor",
+  "pharmacy",
+  "school",
+  "university",
+  "church",
+  "mosque",
+  "synagogue",
+  "hindu_temple",
+  "funeral_home",
+  "cemetery",
+  "courthouse",
+  "police",
+  "fire_station",
+  "post_office",
+  "storage",
+  "moving_company",
+];
+
+function weightedRandomSelect(candidates: PlaceResult[]): PlaceResult {
+  if (candidates.length === 1) return candidates[0];
+
+  const weights = candidates.map((place) => {
+    const rating = place.rating ?? 3.0;
+    const reviewCount = place.userRatingCount ?? 0;
+
+    const ratingWeight = Math.max(0.5, rating / 2.5);
+    const reviewWeight = Math.log10(Math.max(reviewCount, 1) + 1);
+    const randomFactor = 0.5 + Math.random();
+
+    return ratingWeight * reviewWeight * randomFactor;
+  });
+
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  let random = Math.random() * totalWeight;
+
+  for (let i = 0; i < candidates.length; i++) {
+    random -= weights[i];
+    if (random <= 0) return candidates[i];
+  }
+
+  return candidates[candidates.length - 1];
+}
+
 export const getRandomPlace = async (
   lat: number,
   lng: number,
   priceLevels: string[] = [],
-  includedTypes: string[] = ["restaurant"],
+  includedPrimaryTypes: string[] = ["restaurant"],
+  excludedPrimaryTypes: string[] = [],
   radius: number,
   openNow: boolean | null = null,
 ) => {
@@ -39,6 +105,23 @@ export const getRandomPlace = async (
   try {
     const session = await auth();
 
+    const finalExcludedTypes = [
+      ...new Set([...ALWAYS_EXCLUDED_PRIMARY_TYPES, ...excludedPrimaryTypes]),
+    ].filter((type) => !includedPrimaryTypes.includes(type));
+
+    const requestBody: Record<string, unknown> = {
+      locationRestriction: {
+        circle: {
+          center: { latitude: lat, longitude: lng },
+          radius: radius,
+        },
+      },
+      includedPrimaryTypes: includedPrimaryTypes,
+      excludedPrimaryTypes: finalExcludedTypes,
+      maxResultCount: 20,
+      languageCode: "es",
+    };
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -47,16 +130,7 @@ export const getRandomPlace = async (
         "X-Goog-FieldMask": PLACE_FIELDS.join(","),
         Referer: process.env.NEXTAUTH_URL || "http://localhost:3000",
       },
-      body: JSON.stringify({
-        locationRestriction: {
-          circle: {
-            center: { latitude: lat, longitude: lng },
-            radius: radius,
-          },
-        },
-        includedTypes: includedTypes,
-        maxResultCount: 20,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -65,6 +139,7 @@ export const getRandomPlace = async (
         status: response.status,
         statusText: response.statusText,
         error: errorData,
+        requestBody,
       });
       throw new Error(
         `Error de Google Maps: ${response.status} ${response.statusText}`,
@@ -97,16 +172,34 @@ export const getRandomPlace = async (
     }
 
     if (priceLevels.length > 0) {
-      const priceFiltered = candidates.filter(
-        (place) => place.priceLevel && priceLevels.includes(place.priceLevel),
-      );
+      const googlePriceLevels = priceLevels
+        .map((level) => PRICE_LEVEL_MAPPING[level])
+        .filter(Boolean);
 
-      if (priceFiltered.length > 0) {
-        candidates = priceFiltered;
+      if (googlePriceLevels.length > 0) {
+        const priceFiltered = candidates.filter(
+          (place) =>
+            place.priceLevel && googlePriceLevels.includes(place.priceLevel),
+        );
+
+        if (priceFiltered.length > 0) {
+          candidates = priceFiltered;
+        }
       }
     }
 
-    const winner = candidates[Math.floor(Math.random() * candidates.length)];
+    if (candidates.length > 3) {
+      const qualityFiltered = candidates.filter((place) => {
+        if (!place.rating) return true;
+        return place.rating >= 3.0;
+      });
+
+      if (qualityFiltered.length > 0) {
+        candidates = qualityFiltered;
+      }
+    }
+
+    const winner = weightedRandomSelect(candidates);
 
     try {
       if (session) {

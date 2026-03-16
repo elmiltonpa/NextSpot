@@ -7,7 +7,11 @@ import { PriceSelector } from "./price-selector";
 import { SurpriseButton } from "./surprise-button";
 import { Coordinates } from "@/types/location";
 import { toast } from "sonner";
-import { GOOGLE_TYPE_MAPPING, CategoryKey } from "@/constants/categories";
+import {
+  GOOGLE_PRIMARY_TYPE_MAPPING,
+  GOOGLE_EXCLUDED_TYPE_MAPPING,
+  CategoryKey,
+} from "@/constants/categories";
 import { getRandomPlace } from "@/actions/get-random-place";
 import { useLocation } from "@/context/location-context";
 import { AvailabilitySelector } from "./availability-selector";
@@ -89,11 +93,18 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
     setError(null);
 
     try {
-      const apiTypes = filters.categories.flatMap(
-        (cat) => GOOGLE_TYPE_MAPPING[cat as CategoryKey],
+      const apiPrimaryTypes = filters.categories.flatMap(
+        (cat) => GOOGLE_PRIMARY_TYPE_MAPPING[cat as CategoryKey],
       );
 
-      const typesToSend = apiTypes.length > 0 ? apiTypes : ["restaurant"];
+      const apiExcludedTypes = filters.categories.flatMap(
+        (cat) => GOOGLE_EXCLUDED_TYPE_MAPPING[cat as CategoryKey],
+      );
+
+      const primaryTypesToSend =
+        apiPrimaryTypes.length > 0 ? apiPrimaryTypes : ["restaurant"];
+
+      const excludedTypesToSend = [...new Set(apiExcludedTypes)];
 
       const radius = distanceToMeters[filters.distance];
 
@@ -101,7 +112,8 @@ export function DiscoverySidebar({ userLocation }: BottomSheetProps) {
         userLocation.lat,
         userLocation.lng,
         filters.prices,
-        typesToSend,
+        primaryTypesToSend,
+        excludedTypesToSend,
         radius,
         filters.availability,
       );

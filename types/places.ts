@@ -8,6 +8,8 @@ export interface PlaceResult {
   userRatingCount?: number;
   currentOpeningHours?: { openNow: boolean };
   primaryTypeDisplayName?: { text: string };
+  primaryType?: string;
+  types?: string[];
   photos?: { name: string; authorAttributions: AuthorAttributions[] }[];
   googleMapsUri: string;
   location: { latitude: number; longitude: number };

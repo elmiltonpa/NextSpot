@@ -1,11 +1,12 @@
 "use client";
 
-import { Utensils, Wine, Coffee, TreePine } from "lucide-react";
+import { Utensils, Wine, Coffee, TreePine, IceCreamCone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CategoryKey } from "@/constants/categories";
 
 const icons = {
   food: Utensils,
+  snacks: IceCreamCone,
   drink: Wine,
   coffee: Coffee,
   outdoors: TreePine,
@@ -13,6 +14,7 @@ const icons = {
 
 const categories: { id: CategoryKey; label: string }[] = [
   { id: "food", label: "Comida" },
+  { id: "snacks", label: "Dulces" },
   { id: "drink", label: "Bebida" },
   { id: "coffee", label: "Café" },
   { id: "outdoors", label: "Aire Libre" },
