@@ -1,5 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Términos de Servicio",
+  description:
+    "Términos y condiciones de uso de NextSpot, la app para descubrir lugares cerca de ti.",
+};
 
 export default function TermsPage() {
   return (

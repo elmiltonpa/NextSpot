@@ -1,5 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Política de Privacidad",
+  description:
+    "Conocé cómo NextSpot protege tu privacidad, qué datos recopilamos y cómo los usamos.",
+};
 
 export default function PrivacyPage() {
   return (

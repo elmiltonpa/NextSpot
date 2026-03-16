@@ -5,10 +5,19 @@ import Image from "next/image";
 import { User, LogOut, ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { DeleteAccountButton } from "@/components/auth/delete-account-button";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{ username: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+  return {
+    title: `${username} - Perfil`,
+    description: `Perfil de ${username} en NextSpot. Descubrí los lugares favoritos de este explorador.`,
+  };
+}
 
 export default async function ProfilePage({ params }: Props) {
   const { username } = await params;

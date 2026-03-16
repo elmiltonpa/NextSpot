@@ -4,7 +4,6 @@ import { prisma } from '@/lib/prisma';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextspot.vercel.app';
 
-  // Rutas estáticas
   const staticRoutes = [
     '',
     '/login',
@@ -18,13 +17,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }));
 
-  // Rutas dinámicas (Usuarios)
-  // Obtenemos los usuarios de la base de datos para indexar sus perfiles
   let userRoutes: MetadataRoute.Sitemap = [];
   try {
     const users = await prisma.user.findMany({
       select: { username: true, updatedAt: true },
-      take: 1000, // Limitamos para no sobrecargar el sitemap inicial
+      take: 1000,
     });
 
     userRoutes = users
